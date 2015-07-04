@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 import Control.Monad.State (evalStateT)
 import Game
 import Interface.Console (game)

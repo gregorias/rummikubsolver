@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 module Game where
 
 import Control.Applicative
