@@ -28,6 +28,7 @@ executable RummikubSolver
                        , safe
                        , text
                        , transformers
+                       , threepenny-gui
   default-extensions:  FlexibleContexts
                        FlexibleInstances
   hs-source-dirs:      src

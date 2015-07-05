@@ -207,6 +207,10 @@ initialRummikubState = RummikubState
   where
     bounds = (0, fromEnum (maxBound :: Tile))
 
+tileArrayElems :: TileArray -> [Tile]
+tileArrayElems tileArray = 
+  concatMap (\(i, c) -> replicate c (toEnum i)) (assocs tileArray)
+
 modifyTileCount :: Int
   -> Tile
   -> TileArray

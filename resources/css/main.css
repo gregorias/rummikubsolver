@@ -1,0 +1,77 @@
+body {
+  margin: 0px auto;
+  width: 700px;
+}
+
+h1 {
+  text-align: center;
+}
+
+div.tileTableWrap {
+  min-height: 71px;
+  margin: 5px auto;
+}
+
+div.tileTable {
+  min-height: 71px;
+  margin: 5px 0px;
+}
+
+div#tableGrid {
+  background-color: #966F33;
+}
+
+div#rackGrid {
+  background-color: #f5f5dc;
+}
+
+div.table {
+  margin: auto;
+}
+
+div.tile {
+  background-color: #FFFFFF;
+  text-align: center;
+  width: 40px;
+  height: 35px;
+  border: thin solid black;
+  padding: 15px 0px;
+  margin: 2px 5px;
+}
+
+div.red {
+  color: red;
+}
+
+div.blue {
+  color: #00F;
+}
+
+div.yellow {
+  color: #F93;
+}
+
+div.black {
+  color: #000;
+}
+
+div.setsWrap {
+  margin: 5px auto;
+}
+
+div.sets {
+  margin: auto;
+}
+
+div.sets {
+  min-height: 71px;
+}
+
+div.set {
+  float: left;
+  margin: 0px 10px;
+}
+
+div.clear {
+  clear: both;
+}
