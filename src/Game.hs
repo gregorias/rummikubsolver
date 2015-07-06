@@ -1,3 +1,7 @@
+{-
+Module : Game
+Description : Data and functions for describing and solving a Rummikub game.
+-}
 module Game where
 
 import Control.Applicative
@@ -9,7 +13,10 @@ import Data.LinearProgram
 import Data.Map.Lazy (Map, fromList, union)
 import qualified Data.Map.Lazy as Data.Map
 
-generateCombinations :: [a] -> Int -> [[a]]
+-- | Generate all combinations without repetition of given length.
+generateCombinations :: [a] -- ^ source list
+  -> Int -- ^ size of combinations
+  -> [[a]] -- ^ possible combinations
 generateCombinations source n | n <= 0 = [[]]
                               | otherwise =
   generateCombinations' source n (length source)

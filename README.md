@@ -7,19 +7,19 @@ Description
 ===========
 
 Don't know whether there is a winning move? Someone can't finish, has made a
-mess on board, and can't retrieve original sets? Don't worry! RummikubSolver
+mess on board, and can't retrieve original sets? Don't worry! rummikubsolver
 automatically finds the solution.
 
-RummikubSolver uses integer linear programming to find the solution which
+rummikubsolver uses integer linear programming to find the solution which
 maximizes the number of tiles placed on the table from the rack. You just need
-to provide current description of the state of the game. RummikubSolver will
+to provide current description of the state of the game. rummikubsolver will
 display possible sets that are achievable and tiles that may be placed to
 achieve them.
 
 Installation & Usage
 ======
 
-RummikubSolver uses cabal and standard cabal build order builds the package:
+rummikubsolver uses cabal and standard cabal build order builds the package:
 
     cabal sandbox init
     cabal install --only-dependencies
@@ -27,9 +27,9 @@ RummikubSolver uses cabal and standard cabal build order builds the package:
     cabal build
 
 This places the executable file in
-<code>dist/build/RummikubSolver/RummikubSolver</code>.
+<code>dist/build/rummikubsolver/rummikubsolver</code>.
 
-RummikubSolver has 2 UIs available: CLI and GUI. GUI is turn on on default and
+rummikubsolver has 2 UIs available: CLI and GUI. GUI is turn on on default and
 uses threepenny-gui to run a web interface. Type <code>127.0.0.1:8080</code> to
 use the GUI.
 
