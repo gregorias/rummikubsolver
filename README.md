@@ -57,7 +57,5 @@ board game nights.
 TODO
 =====
 
-* Check whether fresh build works and add remarks if necessary
 * Add unit tests
 * Move tile parsing to one file
-
