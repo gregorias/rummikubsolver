@@ -48,6 +48,11 @@ Formally the queries have following syntax:
     VALUE ::= 1-13
     VALUE_RANGE ::= VALUE - VALUE
 
+Screenshot
+=====
+
+[screenshot](doc/rummikubsolver.jpg)
+
 Final remarks
 =====
 
