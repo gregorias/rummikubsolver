@@ -6,9 +6,7 @@ import Control.Applicative
 import qualified Control.Monad
 import Control.Monad.State.Lazy
 import qualified Data.Array.IArray as Array
-import Data.Either
 import Data.Maybe
-import Data.List (partition)
 import qualified Data.Text as Text
 import qualified Data.Map.Lazy as Map
 import Game (
@@ -26,6 +24,7 @@ import Game (
   , solveRummikubState
   , table
   )
+import Interface.Common
 import qualified Safe
 
 type Game = StateT RummikubState IO ()
@@ -117,59 +116,8 @@ readTiles = do
     "where TILE ::= [-] COLOR VALUE, COLOR ::= [rlyb]+, " ++ 
     "VALUE ::= INT | INT - INT (write '-' to remove the tile): ")
   listOfTiles <- getLine
-  let
-    tileStrings = map (Text.unpack . Text.strip) . Text.splitOn (Text.pack ",")
-      . Text.pack
-      $ listOfTiles
-    (removeStrings, addStrings) = partition
-      ((&&) <$> ((> 0) . length) <*> ((== '-') . head))
-      tileStrings
-    addTiles = map tileStringToTile addStrings
-    removeTiles = map (tileStringToTile . tail) removeStrings
-    tiles = removeTiles ++ addTiles
-  sequence_ . map putStrLn . lefts $ tiles
-  if length (lefts tiles) > 0
-  then return ([], [])
-  else return $ (concat $ rights removeTiles, concat $ rights addTiles)
-  where
-    tileStringToTile :: String -> Either String [Tile]
-    tileStringToTile tileString =
-      if length tileString == 0
-      then Left "Provided empty string. Empty string is invalid."
-      else 
-        if tileString == "j"
-        then Right [Joker]
-        else
-          if length colors == 0 || length values == 0 
-            || head values < minValue || last values > maxValue
-          then Left $ "Could not parse string: " ++ tileString
-          else Right $ [ValueTile (v, c) | v <- values, c <- colors]
-      where
-        colorMap = [('r', Red), ('l', Blue), ('y', Yellow), ('b', Black)]
-        colorChars = map fst colorMap
-        (colorsPrefix, valueSuffix) = break 
-          (not . flip elem colorChars)
-          tileString
-        colors :: [Color]
-        colors = catMaybes $ map (flip lookup colorMap) colorsPrefix
-        values = parseValueSuffix valueSuffix :: [Int]
-        parseValueSuffix :: String -> [Int]
-        parseValueSuffix valueStr = 
-          let 
-            bounds :: [Maybe Int]
-            bounds = map (Safe.readMay . Text.unpack . Text.strip)
-              . Text.splitOn (Text.pack "-")
-              . Text.pack 
-              $ valueStr
-          in
-            if length bounds > 2 || length bounds == 0 
-                || length (filter isNothing bounds) > 0
-            then []
-            else
-              if length bounds == 2
-              then [(fromJust $ bounds !! 0) .. (fromJust $ bounds !! 1)]
-              else [(fromJust $ bounds !! 0)]
-              
+  return $ parseTiles listOfTiles
+
 eitherToMaybe :: Either a b -> Maybe b
 eitherToMaybe = either (\_ -> Nothing) Just
 

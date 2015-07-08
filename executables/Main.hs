@@ -30,9 +30,9 @@ optionNames = helpOptions ++ [cliOption, guiOption, portOption, cssOption]
 
 helpString :: String
 helpString = 
-  "Usage: RummikubSolver [OPTION]...\n" ++
-  "RummikubSolver finds the biggest possible move in a Rummikub game.\n" ++
-  "RummikubSolver accepts the following options:\n" ++ 
+  "Usage: rummikubsolver [OPTION]...\n" ++
+  "rummikubSolver finds the biggest possible move in a Rummikub game.\n" ++
+  "rummikubSolver accepts the following options:\n" ++ 
   "    -h|--help - Display this help message.\n" ++
   "    --gui|--cli - Run the gui/console interface (--gui is on default).\n" ++
   "    --port=PORT - The port under which the GUI web interface will run \n" ++

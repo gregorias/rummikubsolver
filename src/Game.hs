@@ -17,7 +17,8 @@ import qualified Data.Map.Lazy as Data.Map
 generateCombinations :: [a] -- ^ source list
   -> Int -- ^ size of combinations
   -> [[a]] -- ^ possible combinations
-generateCombinations source n | n <= 0 = [[]]
+generateCombinations source n | n < 0 = []
+                              | n == 0 = [[]]
                               | otherwise =
   generateCombinations' source n (length source)
   where
@@ -130,10 +131,6 @@ initModel sArr table rack = do
     sBounds = bounds sArr
     tileSize = (snd . snd) sBounds
     setSize = (fst . snd) sBounds
-  -- set all variables as integers
-  -- set rack bounds (y's) <= rack
-  
-  -- set tile constraints (x's) sum s[i][j] * x[i] == table[j] + y[j]
 
 setVariableBounds ::
   (MonadState (LP (Int, Int) Int) m)
@@ -161,7 +158,11 @@ variableKinds setSize = do
   where
     rackSize = fromEnum (maxBound :: Tile)
 
-tileConstraints sArr table = 
+tileConstraints :: (IArray a Int, MonadState (LP (Int, Int) Int) m)
+  => a (Int, Int) Int
+  -> a Int Int
+  -> m ()
+tileConstraints sArr table =
   sequence_ $ map createTileConstraint [0..52]
   where 
     setSize = fst . snd . bounds $ sArr
@@ -184,7 +185,7 @@ solveModel ::
   => LPT (Int, Int) Int m ()
   -> m (Maybe ([Set], [Tile]))
 solveModel model = do
-  result <- evalLPT $ model >> quickSolveMIP
+  result <- evalLPT $ model >> glpSolve (mipDefaults { msgLev = MsgOff })
   let maybeVarMap = fmap snd . snd $ result
   return $ fmap varMapToResult maybeVarMap
   where 

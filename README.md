@@ -53,9 +53,3 @@ Final remarks
 
 This program was done to train my Rummikub skills and as a helping tool for
 board game nights.
-
-TODO
-=====
-
-* Add unit tests
-* Move tile parsing to one file

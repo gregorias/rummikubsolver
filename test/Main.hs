@@ -1,6 +1,6 @@
 import qualified Test.HUnit as HU
 
-import Test.Game
+import GameTest
 
 main :: IO ()
 main = HU.runTestTT allTests >> return ()
