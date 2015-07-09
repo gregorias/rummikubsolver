@@ -7,18 +7,9 @@ import Data.Maybe
 import qualified Data.Text as Text
 import Game (
   Color(..)
-  , RummikubState
-  , Set
   , Tile(..)
-  , TileArray
-  , initialRummikubState
   , maxValue
   , minValue
-  , modifyRackMay
-  , modifyTableMay
-  , rack
-  , solveRummikubState
-  , table
   )
 import qualified Safe
 

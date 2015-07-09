@@ -3,21 +3,14 @@ module Interface.Console (
     ) where
 
 import Control.Applicative
-import qualified Control.Monad
 import Control.Monad.State.Lazy
 import qualified Data.Array.IArray as Array
-import Data.Maybe
-import qualified Data.Text as Text
-import qualified Data.Map.Lazy as Map
 import Game (
   Color(..)
   , RummikubState
-  , Set
   , Tile(..)
   , TileArray
   , initialRummikubState
-  , maxValue
-  , minValue
   , modifyRackMay
   , modifyTableMay
   , rack
@@ -90,8 +83,8 @@ solveCommand = do
 
 showCommand :: Game
 showCommand = do
-  state <- get
-  liftIO . putStrLn . (++ "\n") . prettyPrint $ state
+  curState <- get
+  liftIO . putStrLn . (++ "\n") . prettyPrint $ curState
 
 restartCommand :: Game
 restartCommand = put initialRummikubState
@@ -118,12 +111,6 @@ readTiles = do
   listOfTiles <- getLine
   return $ parseTiles listOfTiles
 
-eitherToMaybe :: Either a b -> Maybe b
-eitherToMaybe = either (\_ -> Nothing) Just
-
-maybeToEither :: e -> Maybe a -> Either e a
-maybeToEither = flip maybe Right . Left
-
 separateWithAComma :: [String] -> String
 separateWithAComma (x : y : xs) = x ++ ", " ++ separateWithAComma (y : xs)
 separateWithAComma (x : []) = x
@@ -148,7 +135,7 @@ instance PrettyPrint TileArray where
         . map (\(i, e) -> (toEnum i :: Tile, e)) . Array.assocs 
         $ arr
       matchColor :: Color -> Tile -> Bool
-      matchColor c Joker = False
+      matchColor _ Joker = False
       matchColor c (ValueTile (_, c')) = c == c'
       reds = filter (matchColor Red . fst) elements
       blues = filter (matchColor Blue . fst) elements
@@ -160,10 +147,10 @@ instance PrettyPrint TileArray where
         . concatMap (\(t, i) -> replicate i (prettyPrint t))
 
 instance PrettyPrint RummikubState where
-  prettyPrint state =
+  prettyPrint curState =
     "-----\n" ++ 
     "TABLE\n" ++ 
-    prettyPrint (table state) ++ "\n" ++
+    prettyPrint (table curState) ++ "\n" ++
     "-----\n" ++ 
     "RACK\n" ++ 
-    prettyPrint (rack state)
+    prettyPrint (rack curState)

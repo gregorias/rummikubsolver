@@ -7,10 +7,6 @@ module Interface.GUI (
     ) where
 
 import Control.Monad
-import qualified Data.Array.IArray as Array
-import Data.Either
-import Data.List
-import Data.Maybe
 import qualified Graphics.UI.Threepenny as UI
 import Graphics.UI.Threepenny.Core
 import qualified Reactive.Threepenny as FRP
@@ -44,7 +40,7 @@ setup window = do
   return window # set UI.title "rummikubsolver"
   UI.addStyleSheet window "main.css"
 
-  title <- UI.h1 # set text "rummikubsolver"
+  windowTitle <- UI.h1 # set text "rummikubsolver"
 
   let state = Game.initialRummikubState
   (stateChangeEvent, stateChangeHandler) <- liftIO FRP.newEvent
@@ -57,8 +53,8 @@ setup window = do
   (solutionEvent, solutionHandler) <- liftIO FRP.newEvent
   liftIO $ FRP.register 
     stateEvent 
-    (\state -> do
-      maybeSolution <- Game.solveRummikubState state
+    (\stateArg -> do
+      maybeSolution <- Game.solveRummikubState stateArg
       maybe (solutionHandler ([], [])) solutionHandler maybeSolution
       )
   solutionBehavior <- FRP.stepper ([], []) solutionEvent
@@ -90,22 +86,13 @@ setup window = do
   placedTilesBox <- placedTilesDiv solutionTilesBehavior
 
   getBody window #+ [
-    element title
+    element windowTitle
     , element tableTileTableWrap
     , element rackTileTableWrap
     , element setsBox
     , element placedTilesBox
     ]
   return ()
-  where
-    safeModify :: 
-      (Int -> Game.Tile -> Game.RummikubState -> Maybe Game.RummikubState)
-      -> Int
-      -> Game.Tile
-      -> Game.RummikubState
-      -> Game.RummikubState
-    safeModify modifyFunctionMay count tile state =  
-      maybe state id $ modifyFunctionMay count tile state
 
 -- | Configure a command row
 commandRow :: String
@@ -127,8 +114,8 @@ commandRow prompt modifyFunction stateChangeHandler = do
         modifyTiles count tiles = foldr (>=>) (Just . id)
           $ map (modifyFunction count) tiles
         modifyMaybeSafe :: (s -> Maybe s) -> s -> s
-        modifyMaybeSafe modifyFunction state =
-          maybe state id $ modifyFunction state
+        modifyMaybeSafe modifyFun state =
+          maybe state id $ modifyFun state
       in do
       inputString <- inputBox # get value :: UI String
       let 

@@ -24,7 +24,7 @@ allTests = HU.TestList [
 
 generateCombinationsTest0 :: HU.Test
 generateCombinationsTest0 = HU.TestCase $ do
-  let result = Game.generateCombinations [0 .. 2] 2
+  let result = Game.generateCombinations [0 .. 2 :: Int] 2
   HU.assertEqual "" 3 $ length result
   HU.assertBool "" (elem [0, 1] result)
   HU.assertBool "" (elem [0, 2] result)
@@ -32,17 +32,17 @@ generateCombinationsTest0 = HU.TestCase $ do
 
 generateCombinationsTest1 :: HU.Test
 generateCombinationsTest1 = HU.TestCase $ do
-  let result = Game.generateCombinations [0 .. 2] 0
+  let result = Game.generateCombinations [0 .. 2 :: Int] 0
   HU.assertEqual "" 1 $ length result
   HU.assertBool "" (elem [] result)
 
 generateCombinationsTest2 :: HU.Test
 generateCombinationsTest2 = HU.TestCase $ do
-  HU.assertEqual "" [] $ Game.generateCombinations [0 .. 2] 4
+  HU.assertEqual "" [] $ Game.generateCombinations [0 .. 2 :: Int] 4
 
 generateCombinationsTest3 :: HU.Test
 generateCombinationsTest3 = HU.TestCase $ do
-  HU.assertEqual "" [] $ Game.generateCombinations [0 .. 2] (-1)
+  HU.assertEqual "" [] $ Game.generateCombinations [0 .. 2 :: Int] (-1)
 
 shouldBe1173Sets :: HU.Test
 shouldBe1173Sets = 1173 HU.~=? length Game.allSets

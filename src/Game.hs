@@ -17,19 +17,14 @@ import qualified Data.Map.Lazy as Data.Map
 generateCombinations :: [a] -- ^ source list
   -> Int -- ^ size of combinations
   -> [[a]] -- ^ possible combinations
-generateCombinations source n | n < 0 = []
-                              | n == 0 = [[]]
-                              | otherwise =
-  generateCombinations' source n (length source)
-  where
-    generateCombinations' (s : ss) n sourceLength
-      | sourceLength < n = []
-      | otherwise =
-        map ((:) s) (generateCombinations' ss (n - 1) (sourceLength - 1))
-        ++
-        (generateCombinations' ss n (sourceLength - 1))
-    generateCombinations' [] 0 0 =  [[]]
-    generateCombinations' [] _ 0 =  []
+generateCombinations [] n | n == 0 = [[]]
+                          | otherwise = []
+generateCombinations (s : ss) n | n < 0 = []
+                                | n == 0 = [[]]
+                                | otherwise =
+  map ((:) s) (generateCombinations ss (n - 1))
+  ++
+  generateCombinations ss n
 
 data Color = Red | Blue | Yellow | Black deriving (Bounded, Enum, Eq, Show)
 
@@ -105,7 +100,7 @@ generateAllColorSets jokerCount setSize = do
 
 initSParameters :: (IArray a Int) => [Set] -> a (Int, Int) Int
 initSParameters sets =
-  accumArray (\count _ -> count + 1) 0 bounds assocList
+  accumArray (\count _ -> count + 1) 0 sArrayBounds assocList
   where 
     setToIndexes = map fromEnum
     setsWithIndexes = zip [0..] $ map setToIndexes sets
@@ -113,20 +108,20 @@ initSParameters sets =
     arrayIndexes = concatMap (\(v, set) -> zip (repeat v) set) setsWithIndexes
     assocList = zip arrayIndexes (repeat undefined)
     setCount = length sets
-    bounds = ((0, 0), (setCount, fromEnum $ (maxBound :: Tile)))
+    sArrayBounds = ((0, 0), (setCount, fromEnum $ (maxBound :: Tile)))
 
 initModel :: (IArray a Int, MonadState (LP (Int, Int) Int) m)
   => a (Int, Int) Int
   -> a Int Int
   -> a Int Int
   -> m ()
-initModel sArr table rack = do
+initModel sArr tableArg rackArg = do
   setDirection Max
   setObjective $ fromList $ zip (zip (repeat 0) [0..tileSize]) (repeat 1)
   variableKinds setSize
   setVariableBounds setSize
-  rackVariableBounds rack
-  tileConstraints sArr table
+  rackVariableBounds rackArg
+  tileConstraints sArr tableArg
   where 
     sBounds = bounds sArr
     tileSize = (snd . snd) sBounds
@@ -143,8 +138,8 @@ rackVariableBounds ::
   (MonadState (LP (Int, Int) Int) m, IArray a Int)
   => a Int Int
   -> m()
-rackVariableBounds rack = sequence_ 
-  $ map (\i -> varLeq (0, i) ( rack ! i)) [0 .. rackSize]
+rackVariableBounds rackArg = sequence_ 
+  $ map (\i -> varLeq (0, i) (rackArg ! i)) [0 .. rackSize]
   where
     rackSize = fromEnum $ (maxBound :: Tile)
 
@@ -162,14 +157,14 @@ tileConstraints :: (IArray a Int, MonadState (LP (Int, Int) Int) m)
   => a (Int, Int) Int
   -> a Int Int
   -> m ()
-tileConstraints sArr table =
+tileConstraints sArr tableArg =
   sequence_ $ map createTileConstraint [0..52]
   where 
     setSize = fst . snd . bounds $ sArr
     createTileConstraint tileIndex =
       equalTo
         (union tileUsedInSetsCombination tilesPlacedFromRack)
-        (table ! tileIndex)
+        (tableArg ! tileIndex)
       where
         tileUsedInSetsCombination :: Map (Int, Int) Int
         tileUsedInSetsCombination = fromList 
@@ -210,10 +205,10 @@ data RummikubState = RummikubState {
 
 initialRummikubState :: RummikubState
 initialRummikubState = RummikubState
-  (array bounds $ zip [0 .. (snd bounds)] $ repeat 0)
-  (array bounds $ zip [0 .. (snd bounds)] $ repeat 0)
+  (array arrayBounds $ zip [0 .. (snd arrayBounds)] $ repeat 0)
+  (array arrayBounds $ zip [0 .. (snd arrayBounds)] $ repeat 0)
   where
-    bounds = (0, fromEnum (maxBound :: Tile))
+    arrayBounds = (0, fromEnum (maxBound :: Tile))
 
 tileArrayElems :: TileArray -> [Tile]
 tileArrayElems tileArray = 
@@ -223,7 +218,8 @@ modifyTileCount :: Int
   -> Tile
   -> TileArray
   -> TileArray
-modifyTileCount count tile array = accum (+) array [(fromEnum tile, count)]
+modifyTileCount count tile tileArray = accum (+) tileArray
+  [(fromEnum tile, count)]
 
 isTileArrayConsistent :: TileArray -> Bool
 isTileArrayConsistent = all ((&&) <$> (<= 2) <*> (>= 0)) . elems
@@ -242,12 +238,12 @@ modifyTileCountMay :: Int
   -> Tile
   -> TileArray
   -> Maybe TileArray
-modifyTileCountMay count tile array =
+modifyTileCountMay count tile tileArray =
   if isTileArrayConsistent result
   then Just result
   else Nothing
   where
-    result = modifyTileCount count tile array
+    result = modifyTileCount count tile tileArray
 
 modifyTable :: Int
   -> Tile
