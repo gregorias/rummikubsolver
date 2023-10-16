@@ -1,0 +1,19 @@
+pre-commit:
+  commands:
+    hlint:
+      tags: lint
+      glob: "*.hs"
+      run: stack exec hlint {staged_files} -- -X QuasiQuotes
+    fourmolu:
+      tags: style
+      glob: "*.hs"
+      run: fourmolu -o "-XTypeApplications" -i {staged_files} && git add {staged_files}
+    markdownlint:
+      tags: documentation style
+      files: git diff --name-only --cached --diff-filter=AM
+      glob: '*.md'
+      run: markdownlint {files}
+commit-msg:
+  commands:
+    commitlint:
+      run: "commitlint --edit={1}"

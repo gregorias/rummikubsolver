@@ -1,0 +1,15 @@
+resolver: lts-20.26
+
+# User packages to be built.
+packages:
+- .
+
+# Dependency packages to be pulled from upstream that are not in the resolver.
+extra-deps:
+- glpk-hs-0.8
+- gasp-1.3.0.0
+- threepenny-gui-0.9.4.0
+- snap-server-1.1.2.1
+- snap-core-1.0.5.1
+- websockets-snap-0.10.3.1
+- readable-0.3.1
