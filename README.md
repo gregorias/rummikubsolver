@@ -14,7 +14,15 @@ achieve them.
 
 ## Installation
 
-Rummikub uses stack to build & install the package
+### Building from Source
+
+Rummikub Solver requires [GLPK](https://www.gnu.org/software/glpk/). Here are
+package pointers to some selected platforms:
+
+- On Ubuntu, with [libglpk-dev](https://packages.ubuntu.com/lunar/libglpk-dev).
+- On MacOS, with [Homebrew GLPK](https://formulae.brew.sh/formula/glpk).
+
+Rummikub Solver uses Stack to build & install the package:
 
 ```bash
 stack build
@@ -27,6 +35,8 @@ stack install
 Rummikub Solver has 2 UIs available: CLI and GUI. GUI is turned on by default
 and uses threepenny-gui to run a web interface. Visit `127.0.0.1:8080` to use
 the GUI.
+
+You can run Rummikub Solver after installation by executing `rummikubsolver`.
 
 Both interfaces use special syntax for add or removing tiles from the table or
 the rack. For example:
