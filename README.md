@@ -14,6 +14,12 @@ achieve them.
 
 ## Installation
 
+### Download from GitHub releases
+
+You can check [the releases
+tab](https://github.com/gregorias/rummikubsolver/releases) if there's already a
+binary built for your platform.
+
 ### Building from Source
 
 Rummikub Solver requires [GLPK](https://www.gnu.org/software/glpk/). Here are
