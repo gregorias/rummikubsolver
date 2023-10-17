@@ -24,8 +24,6 @@ dependencies:
 
 language: GHC2021
 
-# Some defaults recommended by https://kowainik.github.io/posts/2019-02-06-style-guide#default-extensions
-# Also use Relude
 default-extensions:
   DataKinds
   DerivingStrategies
