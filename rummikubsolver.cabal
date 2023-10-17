@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -35,7 +35,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      BangPatterns DataKinds DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralisedNewtypeDeriving ImportQualifiedPost InstanceSigs LambdaCase MultiParamTypeClasses MultiWayIf NumericUnderscores OverloadedLabels OverloadedStrings PatternSynonyms QuasiQuotes ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeOperators UnicodeSyntax ViewPatterns
+      DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FunctionalDependencies GADTs LambdaCase OverloadedLabels OverloadedStrings TypeFamilies TypeOperators
   ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures
   build-depends:
       array
@@ -47,7 +47,7 @@ library
     , text
     , threepenny-gui
     , transformers
-  default-language: Haskell2010
+  default-language: GHC2021
 
 executable rummikubsolver
   main-is: Main.hs
@@ -56,14 +56,14 @@ executable rummikubsolver
   hs-source-dirs:
       executables
   default-extensions:
-      BangPatterns DataKinds DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralisedNewtypeDeriving ImportQualifiedPost InstanceSigs LambdaCase MultiParamTypeClasses MultiWayIf NumericUnderscores OverloadedLabels OverloadedStrings PatternSynonyms QuasiQuotes ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeOperators UnicodeSyntax ViewPatterns
+      DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FunctionalDependencies GADTs LambdaCase OverloadedLabels OverloadedStrings TypeFamilies TypeOperators
   ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.12 && <5
     , mtl
     , rummikubsolver
     , safe
-  default-language: Haskell2010
+  default-language: GHC2021
 
 test-suite test-rummikubsolver
   type: exitcode-stdio-1.0
@@ -74,10 +74,10 @@ test-suite test-rummikubsolver
   hs-source-dirs:
       test
   default-extensions:
-      BangPatterns DataKinds DeriveDataTypeable DeriveFoldable DeriveFunctor DeriveGeneric DeriveTraversable DerivingStrategies DerivingVia DuplicateRecordFields FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralisedNewtypeDeriving ImportQualifiedPost InstanceSigs LambdaCase MultiParamTypeClasses MultiWayIf NumericUnderscores OverloadedLabels OverloadedStrings PatternSynonyms QuasiQuotes ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeOperators UnicodeSyntax ViewPatterns
+      DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FunctionalDependencies GADTs LambdaCase OverloadedLabels OverloadedStrings TypeFamilies TypeOperators
   ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -main-is Main
   build-depends:
       HUnit
     , base >=4.12 && <5
     , rummikubsolver
-  default-language: Haskell2010
+  default-language: GHC2021
