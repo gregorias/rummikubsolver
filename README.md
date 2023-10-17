@@ -1,6 +1,6 @@
 # Rummikub Solver
 
-This is solver for [Rummikub][rummikub] the game.
+This is a solver for [Rummikub][rummikub].
 
 Don't know whether there is a winning move? Someone can't finish, has made a
 mess on board, and can't retrieve original sets? Don't worry! Rummikub Solver
