@@ -4,7 +4,22 @@
 Module : Game
 Description : Data and functions for describing and solving a Rummikub game.
 -}
-module Game where
+module Game (
+    Color (..),
+    Tile (..),
+    TileArray,
+    RummikubState (..),
+    minValue,
+    maxValue,
+    initialRummikubState,
+    tileArrayElems,
+    modifyTileCountMay,
+    modifyTable,
+    modifyTableMay,
+    modifyRack,
+    modifyRackMay,
+    solveRummikubState,
+) where
 
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.State.Class (MonadState)
@@ -28,7 +43,7 @@ import Data.LinearProgram (
  )
 import Data.LinearProgram.Common (Direction (..))
 import Data.Map.Lazy (Map, fromList, union)
-import qualified Data.Map.Lazy as Data.Map
+import Data.Map.Lazy qualified as Data.Map
 
 -- | Generate all combinations without repetition of given length.
 generateCombinations ::
@@ -48,9 +63,9 @@ generateCombinations (s : ss) n
         map (s :) (generateCombinations ss (n - 1))
             ++ generateCombinations ss n
 
-data Color = Red | Blue | Yellow | Black deriving (Bounded, Enum, Eq, Show)
+data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Show)
 
-data Tile = ValueTile (Int, Color) | Joker deriving (Eq, Show)
+data Tile = ValueTile (Int, Color) | Joker deriving stock (Eq, Show)
 
 instance Bounded Tile where
     minBound = ValueTile (minValue, minBound)
@@ -208,7 +223,7 @@ tileConstraints sArr tableArg =
         tilesPlacedFromRack = fromList [((0, tileIndex), -1)]
 
 solveModel ::
-    (Monad m, MonadIO m) =>
+    (MonadIO m) =>
     Data.LinearProgram.LPT (Int, Int) Int m () ->
     m (Maybe ([Set], [Tile]))
 solveModel model = do
@@ -235,7 +250,7 @@ data RummikubState = RummikubState
     { table :: TileArray
     , rack :: TileArray
     }
-    deriving (Eq, Show)
+    deriving stock (Eq, Show)
 
 initialRummikubState :: RummikubState
 initialRummikubState =

@@ -1,11 +1,11 @@
 import Control.Monad.State (evalStateT)
 import Data.Maybe
-import qualified Safe
+import Safe qualified
 import System.Environment
 
 import Game
 import Interface.Console (game)
-import qualified Interface.GUI as GUI
+import Interface.GUI qualified as GUI
 
 helpOptions :: [String]
 helpOptions = ["-h", "--help"]
@@ -97,7 +97,7 @@ runGUI options =
             . filter ((== cssOption) . getOptionName)
             $ options
 
-data Option = NoArgOption String | ArgOption String String deriving (Eq, Show)
+data Option = NoArgOption String | ArgOption String String deriving stock (Eq, Show)
 
 isArgOption :: Option -> Bool
 isArgOption (NoArgOption _) = False

@@ -1,16 +1,16 @@
-module Interface.Common where
+module Interface.Common (parseTiles) where
 
 import Data.Either
 import Data.List (partition)
 import Data.Maybe
-import qualified Data.Text as Text
+import Data.Text qualified as Text
 import Game (
     Color (..),
     Tile (..),
     maxValue,
     minValue,
  )
-import qualified Safe
+import Safe qualified
 
 -- | Parse a list of tile specifications from input.
 parseTiles :: String -> ([Game.Tile], [Game.Tile])
@@ -23,9 +23,12 @@ parseTiles input =
     tileStringToTile tileString
         | null tileString = Left "Provided empty string. Empty string is invalid."
         | tileString == "j" = Right [Game.Joker]
-        | null colors || null values
-            || head values < Game.minValue
-            || last values > Game.maxValue =
+        | null colors
+            || null values
+            || head values
+            < Game.minValue
+            || last values
+            > Game.maxValue =
             Left $ "Could not parse string: " ++ tileString
         | otherwise = Right $ [Game.ValueTile (v, c) | v <- values, c <- colors]
       where
@@ -49,7 +52,8 @@ parseTiles input =
                         . Text.splitOn (Text.pack "-")
                         . Text.pack
                         $ valueStr
-             in if length bounds > 2
+             in if length bounds
+                    > 2
                     || null bounds
                     || any isNothing bounds
                     then []
@@ -58,7 +62,8 @@ parseTiles input =
                             then [(fromJust $ head bounds) .. (fromJust $ bounds !! 1)]
                             else [fromJust $ head bounds]
     tileStrings =
-        map (Text.unpack . Text.strip) . Text.splitOn (Text.pack ",")
+        map (Text.unpack . Text.strip)
+            . Text.splitOn (Text.pack ",")
             . Text.pack
             $ input
     (removeStrings, addStrings) =

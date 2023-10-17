@@ -7,12 +7,12 @@ module Interface.GUI (
 ) where
 
 import Control.Monad
-import qualified Graphics.UI.Threepenny as UI
+import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
-import qualified Reactive.Threepenny as FRP
+import Reactive.Threepenny qualified as FRP
 
-import qualified Data.Maybe
-import qualified Game
+import Data.Maybe qualified
+import Game qualified
 import Interface.Common
 
 data GUIConfig = GUIConfig
@@ -39,7 +39,7 @@ game config =
 
 setup :: Window -> UI ()
 setup window = do
-    return window # set UI.title "rummikubsolver"
+    void $ return window # set UI.title "rummikubsolver"
     UI.addStyleSheet window "main.css"
 
     windowTitle <- UI.h1 # set text "rummikubsolver"
@@ -52,22 +52,23 @@ setup window = do
         rackBehavior = fmap (Game.tileArrayElems . Game.rack) stateBehavior
 
     (solutionEvent, solutionHandler) <- liftIO FRP.newEvent
-    liftIO $
-        FRP.register
-            stateEvent
-            ( \stateArg -> do
-                maybeSolution <- Game.solveRummikubState stateArg
-                maybe (solutionHandler ([], [])) solutionHandler maybeSolution
-            )
+    void $
+        liftIO $
+            FRP.register
+                stateEvent
+                ( \stateArg -> do
+                    maybeSolution <- Game.solveRummikubState stateArg
+                    maybe (solutionHandler ([], [])) solutionHandler maybeSolution
+                )
     solutionBehavior <- FRP.stepper ([], []) solutionEvent
     let solutionSetsBehavior = fmap fst solutionBehavior
         solutionTilesBehavior = fmap snd solutionBehavior
 
     tableTileTable <- tileTable tableBehavior
-    element tableTileTable # set UI.id_ "tableGrid"
+    void $ element tableTileTable # set UI.id_ "tableGrid"
 
     rackTileTable <- tileTable rackBehavior
-    element rackTileTable # set UI.id_ "rackGrid"
+    void $ element rackTileTable # set UI.id_ "rackGrid"
 
     tableCommandBar <-
         commandRow
@@ -92,14 +93,14 @@ setup window = do
     setsBox <- setsDiv solutionSetsBehavior
     placedTilesBox <- placedTilesDiv solutionTilesBehavior
 
-    getBody window
-        #+ [ element windowTitle
-           , element tableTileTableWrap
-           , element rackTileTableWrap
-           , element setsBox
-           , element placedTilesBox
-           ]
-    return ()
+    void $
+        getBody window
+            #+ [ element windowTitle
+               , element tableTileTableWrap
+               , element rackTileTableWrap
+               , element setsBox
+               , element placedTilesBox
+               ]
 
 -- | Configure a command row
 commandRow ::
