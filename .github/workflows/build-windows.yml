@@ -1,0 +1,26 @@
+name: Build for Windows
+on:
+  push:
+    branches:
+     - "build-windows"
+  pull_request:
+    branches:
+      - "master"
+  # workflow_dispatch
+jobs:
+  build_sdist:
+    name: Build executable
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GLPK
+        run: choco install glpk
+      - name: Setup Haskell environment
+        uses: haskell-actions/setup@v2.5.0
+        with:
+          ghc-version: '9.4.7'
+          cabal-version: '3.10.1.0'
+          enable-stack: true
+          stack-version: '2.13.1'
+      - name: Build
+        run: stack build
