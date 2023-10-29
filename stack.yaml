@@ -1,4 +1,4 @@
-resolver: lts-21.16
+resolver: lts-21.17
 
 # User packages to be built.
 packages:
