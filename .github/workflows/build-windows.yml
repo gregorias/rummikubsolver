@@ -23,4 +23,4 @@ jobs:
           enable-stack: true
           stack-version: '2.13.1'
       - name: Build
-        run: stack build
+        run: stack build --ghc-options="-IC:\ProgramData\chocolatey\lib\glpk\tools -LC:\ProgramData\chocolatey\lib\glpk\tools"
