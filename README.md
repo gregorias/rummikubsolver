@@ -8,8 +8,8 @@ automatically finds the solution.
 
 Rummikub Solver uses integer linear programming to find the solution which
 maximizes the number of tiles placed on the table from the rack. You just need
-to provide current description of the state of the game. rummikubsolver will
-display possible sets that are achievable and tiles that may be placed to
+to provide the current description of the state of the game. Rummikub Solver
+will display possible sets that are achievable and tiles that may be placed to
 achieve them.
 
 ## Installation
@@ -28,7 +28,7 @@ package pointers to some selected platforms:
 - On Ubuntu, with [libglpk-dev](https://packages.ubuntu.com/lunar/libglpk-dev).
 - On MacOS, with [Homebrew GLPK](https://formulae.brew.sh/formula/glpk).
 
-Rummikub Solver uses Stack to build & install the package:
+Use Stack to build & install the package:
 
 ```bash
 stack build
@@ -39,13 +39,13 @@ stack install
 ## Usage
 
 Rummikub Solver has 2 UIs available: CLI and GUI. GUI is turned on by default
-and uses threepenny-gui to run a web interface. Visit `127.0.0.1:8080` to use
-the GUI.
+and uses [threepenny-gui](https://hackage.haskell.org/package/threepenny-gui)
+to run a web interface. To use the GUI, visit `127.0.0.1:8080`.
 
 You can run Rummikub Solver after installation by executing `rummikubsolver`.
 
-Both interfaces use special syntax for add or removing tiles from the table or
-the rack. For example:
+Both interfaces use special syntax for adding or removing tiles from the table
+or the rack. For example:
 
 ```plaintext
 -lr1-3 // Remove (-) blue (l) and red (r) tiles of value from 1 to 3.
