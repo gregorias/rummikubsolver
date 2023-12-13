@@ -51,8 +51,10 @@ main = do
         else
             let parsedArgsMaybe = map parseArg args
                 unparsedArgs =
-                    map fst . filter (isNothing . snd) . zip args $
-                        parsedArgsMaybe
+                    map fst
+                        . filter (isNothing . snd)
+                        . zip args
+                        $ parsedArgsMaybe
                 parsedArgs = catMaybes parsedArgsMaybe
                 unknownOptions =
                     filter (not . flip elem optionNames)
@@ -83,7 +85,8 @@ runGUI options =
             }
   where
     port =
-        ( maybe defaultPort (Safe.readDef 8080) . Safe.headMay
+        ( maybe defaultPort (Safe.readDef 8080)
+            . Safe.headMay
             . map getOptionValue
             . filter isArgOption
             . filter ((== portOption) . getOptionName)
