@@ -19,6 +19,8 @@ module Game (
     modifyRack,
     modifyRackMay,
     solveRummikubState,
+    allSets,
+    generateCombinations,
 ) where
 
 import Control.Monad.IO.Class (MonadIO)
@@ -117,7 +119,7 @@ allSets = seqSets ++ colorSets
     colorSets =
         concat $
             [generateAllColorSets j 4 | j <- [minJoker .. maxJoker]]
-            ++ [generateAllColorSets j 3 | j <- [minJoker .. (maxJoker - 1)]]
+                ++ [generateAllColorSets j 3 | j <- [minJoker .. (maxJoker - 1)]]
 
 generateAllSeqSets :: Color -> Int -> Int -> [[Tile]]
 generateAllSeqSets color jokerCount setSize =
