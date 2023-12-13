@@ -20,21 +20,24 @@ category: Game
 description: Please see the README on GitHub at <https://github.com/gregorias/findata-transcoder#readme>
 
 dependencies:
-  - base >= 4.12 && < 5
+  - base >= 4.14 && < 5
 
 language: GHC2021
 
-default-extensions: DataKinds
-  DerivingStrategies
-  DerivingVia
-  DuplicateRecordFields
-  FunctionalDependencies
-  GADTs
-  LambdaCase
-  OverloadedLabels
-  OverloadedStrings
-  TypeFamilies
-  TypeOperators
+default-extensions:
+  - DataKinds
+  - DerivingStrategies
+  - DerivingVia
+  - DuplicateRecordFields
+  - FunctionalDependencies
+  - GADTs
+  - LambdaCase
+  - MultiWayIf
+  - OverloadedLabels
+  - OverloadedStrings
+  - QuasiQuotes
+  - TypeFamilies
+  - TypeOperators
 
 # no-type-defaults, this is dangerous, but in terms of convenience it's so
 # useful to use ExtendedDefaultRules that I keep it.
@@ -51,6 +54,7 @@ ghc-options:
   - -Wredundant-constraints
   - -Wno-type-defaults
   - -Wno-partial-type-signatures
+  - -Wno-name-shadowing
 
 library:
   source-dirs: src

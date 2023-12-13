@@ -35,11 +35,23 @@ library
   hs-source-dirs:
       src
   default-extensions:
-      DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FunctionalDependencies GADTs LambdaCase OverloadedLabels OverloadedStrings TypeFamilies TypeOperators
-  ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures
+      DataKinds
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FunctionalDependencies
+      GADTs
+      LambdaCase
+      MultiWayIf
+      OverloadedLabels
+      OverloadedStrings
+      QuasiQuotes
+      TypeFamilies
+      TypeOperators
+  ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -Wno-name-shadowing
   build-depends:
       array
-    , base >=4.12 && <5
+    , base >=4.14 && <5
     , containers
     , glpk-hs
     , mtl
@@ -56,10 +68,22 @@ executable rummikubsolver
   hs-source-dirs:
       executables
   default-extensions:
-      DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FunctionalDependencies GADTs LambdaCase OverloadedLabels OverloadedStrings TypeFamilies TypeOperators
-  ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+      DataKinds
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FunctionalDependencies
+      GADTs
+      LambdaCase
+      MultiWayIf
+      OverloadedLabels
+      OverloadedStrings
+      QuasiQuotes
+      TypeFamilies
+      TypeOperators
+  ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -Wno-name-shadowing -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.12 && <5
+      base >=4.14 && <5
     , mtl
     , rummikubsolver
     , safe
@@ -74,10 +98,22 @@ test-suite test-rummikubsolver
   hs-source-dirs:
       test
   default-extensions:
-      DataKinds DerivingStrategies DerivingVia DuplicateRecordFields FunctionalDependencies GADTs LambdaCase OverloadedLabels OverloadedStrings TypeFamilies TypeOperators
-  ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N -main-is Main
+      DataKinds
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      FunctionalDependencies
+      GADTs
+      LambdaCase
+      MultiWayIf
+      OverloadedLabels
+      OverloadedStrings
+      QuasiQuotes
+      TypeFamilies
+      TypeOperators
+  ghc-options: -Wall -Werror -Wcompat -Wmissing-deriving-strategies -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wpartial-fields -Wredundant-constraints -Wno-type-defaults -Wno-partial-type-signatures -Wno-name-shadowing -threaded -rtsopts -with-rtsopts=-N -main-is Main
   build-depends:
       HUnit
-    , base >=4.12 && <5
+    , base >=4.14 && <5
     , rummikubsolver
   default-language: GHC2021
