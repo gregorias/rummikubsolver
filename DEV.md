@@ -2,7 +2,18 @@
 
 This is a documentation file for Rummikub Solver's developers.
 
-## Compilation
+## Dev environment setup
 
-Compilation depends on GLPK. On macOS, you can install GLPK with
-`brew install glpk` ([Homebrew](https://formulae.brew.sh/formula/glpk#default)).
+This project requires the following tools:
+
+- [Commitlint]
+- [Lefthook]
+
+Install lefthook:
+
+```shell
+lefthook install
+```
+
+[Commitlint]: https://github.com/conventional-changelog/commitlint
+[Lefthook]: https://github.com/evilmartians/lefthook
