@@ -1,4 +1,4 @@
-# Rummikub Solver
+# 🧩 Rummikub Solver
 
 This is a solver for [Rummikub][rummikub].
 
