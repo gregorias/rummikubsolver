@@ -28,6 +28,7 @@ library
   exposed-modules:
       Cli
       Game
+      Game.Core
       Interface.Common
       Interface.Console
       Interface.GUI

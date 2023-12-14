@@ -44,6 +44,13 @@ import Data.LinearProgram (
 import Data.LinearProgram.Common (Direction (..))
 import Data.Map.Lazy (Map, fromList, union)
 import Data.Map.Lazy qualified as Data.Map
+import Game.Core (
+  Color (..),
+  Set,
+  Tile (..),
+  maxValue,
+  minValue,
+ )
 
 -- | Generate all combinations without repetition of given length.
 generateCombinations ::
@@ -62,35 +69,6 @@ generateCombinations (s : ss) n
   | otherwise =
       map (s :) (generateCombinations ss (n - 1))
         ++ generateCombinations ss n
-
-data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Show)
-
-data Tile = ValueTile (Int, Color) | Joker deriving stock (Eq, Show)
-
-instance Bounded Tile where
-  minBound = ValueTile (minValue, minBound)
-
-  maxBound = Joker
-
-instance Enum Tile where
-  fromEnum (ValueTile (v, c)) = fromEnum c * maxValue + v - 1
-  fromEnum Joker = 4 * maxValue
-
-  toEnum n
-    | n < 0 || n > 4 * maxValue = undefined
-    | n == 4 * maxValue = Joker
-    | otherwise = ValueTile (v, c)
-   where
-    v = n `mod` maxValue + 1
-    c = toEnum $ n `div` maxValue
-
-type Set = [Tile]
-
-minValue :: Int
-minValue = 1
-
-maxValue :: Int
-maxValue = 13
 
 allValues :: [Int]
 allValues = [minValue .. maxValue]
