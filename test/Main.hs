@@ -1,7 +1,9 @@
-import GameTest
 import Test.Closed.Extra qualified
-import Test.HUnit qualified as HU
+import Test.Game qualified
 import Test.Hspec (hspec)
+import Test.Hspec.Contrib.HUnit (fromHUnitTest)
 
 main :: IO ()
-main = HU.runTestTT allTests >> hspec Test.Closed.Extra.tests
+main = hspec $ do
+  fromHUnitTest Test.Game.tests
+  Test.Closed.Extra.tests

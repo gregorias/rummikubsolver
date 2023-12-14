@@ -97,6 +97,7 @@ tests:
     dependencies:
       - closed
       - hspec
+      - hspec-contrib
       - hspec-expectations-pretty-diff
       - HUnit
       - rummikubsolver
