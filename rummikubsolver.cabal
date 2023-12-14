@@ -27,6 +27,7 @@ source-repository head
 library
   exposed-modules:
       Cli
+      Closed.Extra
       Game
       Game.Core
       Interface.Common
@@ -54,10 +55,13 @@ library
   build-depends:
       array
     , base >=4.14 && <5
+    , closed
     , containers
+    , extra
     , glpk-hs
     , mtl
     , optparse-applicative
+    , relude
     , safe
     , text
     , threepenny-gui
@@ -97,6 +101,7 @@ test-suite test-rummikubsolver
   main-is: Main.hs
   other-modules:
       GameTest
+      Test.Closed.Extra
       Paths_rummikubsolver
   hs-source-dirs:
       test
@@ -118,5 +123,8 @@ test-suite test-rummikubsolver
   build-depends:
       HUnit
     , base >=4.14 && <5
+    , closed
+    , hspec
+    , hspec-expectations-pretty-diff
     , rummikubsolver
   default-language: GHC2021

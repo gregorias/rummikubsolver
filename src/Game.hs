@@ -48,6 +48,7 @@ import Game.Core (
   Color (..),
   Set,
   Tile (..),
+  allValues,
   maxValue,
   minValue,
  )
@@ -69,9 +70,6 @@ generateCombinations (s : ss) n
   | otherwise =
       map (s :) (generateCombinations ss (n - 1))
         ++ generateCombinations ss n
-
-allValues :: [Int]
-allValues = [minValue .. maxValue]
 
 minJoker :: Int
 minJoker = 0
@@ -107,8 +105,8 @@ generateAllSeqSets color jokerCount setSize =
   generateSetsFrom :: Int -> [[Tile]]
   generateSetsFrom begVal =
     map
-      (((++) (replicate jokerCount Joker) . valuesToTiles) . (begVal :))
-      (generateCombinations [(begVal + 1) .. maxIntervalValue] (setSize - jokerCount - 1))
+      (((++) (replicate jokerCount Joker) . valuesToTiles) . (fromIntegral begVal :))
+      (generateCombinations [(fromIntegral begVal + 1) .. fromIntegral maxIntervalValue] (setSize - jokerCount - 1))
    where
     maxIntervalValue = min maxValue $ begVal + setSize - 1
 

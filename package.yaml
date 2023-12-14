@@ -60,9 +60,12 @@ library:
   source-dirs: src
   dependencies:
     - array
+    - closed
     - containers
+    - extra
     - glpk-hs
     - mtl
+    - relude
     - safe
     - optparse-applicative
     - text
@@ -92,5 +95,8 @@ tests:
       - -with-rtsopts=-N
       - -main-is Main
     dependencies:
+      - closed
+      - hspec
+      - hspec-expectations-pretty-diff
       - HUnit
       - rummikubsolver
