@@ -64,6 +64,7 @@ library:
     - glpk-hs
     - mtl
     - safe
+    - optparse-applicative
     - text
     - transformers
     - threepenny-gui

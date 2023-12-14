@@ -1,4 +1,4 @@
-import Cli qualified (main)
+import Cli qualified
 
 main :: IO ()
 main = Cli.main
