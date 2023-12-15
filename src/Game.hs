@@ -11,10 +11,7 @@ module Game (
   maxValue,
   initialRummikubState,
   tileArrayElems,
-  modifyTileCountMay,
-  modifyTable,
   modifyTableMay,
-  modifyRack,
   modifyRackMay,
   solveRummikubState,
   allSets,
@@ -264,26 +261,6 @@ isRummikubStateConsistent state =
   rackArray = rack state
   combinedArrays = accum (+) tableArray (assocs rackArray)
 
-modifyTileCountMay ::
-  Int ->
-  Tile ->
-  TileArray ->
-  Maybe TileArray
-modifyTileCountMay count tile tileArray =
-  if isTileArrayConsistent result
-    then Just result
-    else Nothing
- where
-  result = modifyTileCount count tile tileArray
-
-modifyTable ::
-  Int ->
-  Tile ->
-  RummikubState ->
-  RummikubState
-modifyTable count tile state =
-  RummikubState (modifyTileCount count tile $ table state) (rack state)
-
 modifyTableMay ::
   Int ->
   Tile ->
@@ -298,14 +275,6 @@ modifyTableMay count tile state =
     RummikubState
       (modifyTileCount count tile $ table state)
       (rack state)
-
-modifyRack ::
-  Int ->
-  Tile ->
-  RummikubState ->
-  RummikubState
-modifyRack count tile state =
-  RummikubState (table state) (modifyTileCount count tile $ rack state)
 
 modifyRackMay ::
   Int ->
