@@ -128,5 +128,6 @@ test-suite test-rummikubsolver
     , hspec
     , hspec-contrib
     , hspec-expectations-pretty-diff
+    , relude
     , rummikubsolver
   default-language: GHC2021

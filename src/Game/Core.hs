@@ -1,3 +1,5 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 -- | Core primitives for representing a Rummikub game.
 module Game.Core (
   -- * Data types
@@ -11,9 +13,12 @@ module Game.Core (
 ) where
 
 import Closed (Closed, unsafeClosed)
+import Relude hiding (Set)
 
 -- | The color of a tile.
-data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Show)
+data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Generic, Show)
+
+instance Hashable Color
 
 type Value = Closed 1 13
 
@@ -27,7 +32,9 @@ allValues :: [Closed 1 13]
 allValues = [minBound .. maxBound]
 
 -- | A single tile in the game.
-data Tile = ValueTile (Value, Color) | Joker deriving stock (Eq, Show)
+data Tile = ValueTile (Value, Color) | Joker deriving stock (Eq, Generic, Show)
+
+instance Hashable Tile
 
 instance Bounded Tile where
   minBound = ValueTile (minBound, minBound)
@@ -51,4 +58,5 @@ instance Enum Tile where
     v = n `mod` maxValue + 1
     c = toEnum $ n `div` maxValue
 
+-- | A set of tiles. Doesn't verify whether it's a run or a group.
 type Set = [Tile]

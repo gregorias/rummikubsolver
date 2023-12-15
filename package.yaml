@@ -100,4 +100,5 @@ tests:
       - hspec-contrib
       - hspec-expectations-pretty-diff
       - HUnit
+      - relude
       - rummikubsolver
