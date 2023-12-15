@@ -28,6 +28,7 @@ library
   exposed-modules:
       Cli
       Closed.Extra
+      Data.DefaultHashMap.Strict
       Game
       Game.Core
       Interface.Common
