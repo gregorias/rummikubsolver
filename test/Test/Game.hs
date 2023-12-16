@@ -7,16 +7,13 @@ module Test.Game (
 import Control.Monad
 import Data.Maybe
 import Game qualified
+import Game.Core qualified as Game
 import Test.HUnit qualified as HU
 
 tests :: HU.Test
 tests =
   HU.TestList
-    [ HU.TestLabel "generateCombinationsTest0" generateCombinationsTest0
-    , HU.TestLabel "generateCombinationsTest1" generateCombinationsTest1
-    , HU.TestLabel "generateCombinationsTest2" generateCombinationsTest2
-    , HU.TestLabel "generateCombinationsTest3" generateCombinationsTest3
-    , HU.TestLabel "shouldBe1173Sets" shouldBe1173Sets
+    [ HU.TestLabel "shouldBe1173Sets" shouldBe1173Sets
     , HU.TestLabel
         "shouldReturnNothingOnInvalidMoves0"
         shouldReturnNothingOnInvalidMoves0
@@ -27,26 +24,6 @@ tests =
         "shouldSolveTheRummikubCompletely"
         shouldSolveTheRummikubCompletely
     ]
-
-generateCombinationsTest0 :: HU.Test
-generateCombinationsTest0 = HU.TestCase $ do
-  let result = Game.generateCombinations [0 .. 2 :: Int] 2
-  HU.assertEqual "" 3 $ length result
-  HU.assertBool "" ([0, 1] `elem` result)
-  HU.assertBool "" ([0, 2] `elem` result)
-  HU.assertBool "" ([1, 2] `elem` result)
-
-generateCombinationsTest1 :: HU.Test
-generateCombinationsTest1 = HU.TestCase $ do
-  let result = Game.generateCombinations [0 .. 2 :: Int] 0
-  HU.assertEqual "" 1 $ length result
-  HU.assertBool "" ([] `elem` result)
-
-generateCombinationsTest2 :: HU.Test
-generateCombinationsTest2 = HU.TestCase $ HU.assertEqual "" [] $ Game.generateCombinations [0 .. 2 :: Int] 4
-
-generateCombinationsTest3 :: HU.Test
-generateCombinationsTest3 = HU.TestCase $ HU.assertEqual "" [] $ Game.generateCombinations [0 .. 2 :: Int] (-1)
 
 shouldBe1173Sets :: HU.Test
 shouldBe1173Sets = 1173 HU.~=? length Game.allSets

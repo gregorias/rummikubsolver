@@ -9,6 +9,7 @@ module Interface.GUI (
 import Control.Monad
 import Data.Maybe qualified
 import Game qualified
+import Game.Core qualified as Game
 import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
 import Interface.Common

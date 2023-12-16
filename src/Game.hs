@@ -3,8 +3,6 @@ Module : Game
 Description : Data and functions for describing and solving a Rummikub game.
 -}
 module Game (
-  Color (..),
-  Tile (..),
   TileArray,
   RummikubState,
   table,
@@ -17,9 +15,9 @@ module Game (
   modifyRackMay,
   solveRummikubState,
   allSets,
-  generateCombinations,
 ) where
 
+import Combinatorics (generateCombinations)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.State.Class (MonadState)
 import Data.Array.IArray
@@ -51,24 +49,6 @@ import Game.Core (
   maxValue,
   minValue,
  )
-
--- | Generate all combinations without repetition of given length.
-generateCombinations ::
-  -- | source list
-  [a] ->
-  -- | size of combinations
-  Int ->
-  -- | possible combinations
-  [[a]]
-generateCombinations [] n
-  | n == 0 = [[]]
-  | otherwise = []
-generateCombinations (s : ss) n
-  | n < 0 = []
-  | n == 0 = [[]]
-  | otherwise =
-      map (s :) (generateCombinations ss (n - 1))
-        ++ generateCombinations ss n
 
 minJoker :: Int
 minJoker = 0

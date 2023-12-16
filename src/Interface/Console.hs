@@ -5,9 +5,7 @@ module Interface.Console (
 import Control.Monad.State.Lazy
 import Data.Array.IArray qualified as Array
 import Game (
-  Color (..),
   RummikubState,
-  Tile (..),
   TileArray,
   initialRummikubState,
   modifyRackMay,
@@ -15,6 +13,10 @@ import Game (
   rack,
   solveRummikubState,
   table,
+ )
+import Game.Core (
+  Color (..),
+  Tile (..),
  )
 import Interface.Common
 import Safe qualified
