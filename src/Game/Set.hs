@@ -16,7 +16,8 @@ import Game.Core (
   minSingleTileCount,
   minValue,
  )
-import Relude (HashMap, Hashable, Natural)
+import Relude hiding (Set)
+import Relude.Unsafe qualified as Unsafe
 
 -- | A valid set of tiles.
 --
@@ -26,17 +27,17 @@ newtype Set = Set [Tile]
   deriving newtype (Hashable)
 
 instance Bounded Set where
-  minBound = head allSets
-  maxBound = last allSets
+  minBound = Unsafe.head allSets
+  maxBound = Unsafe.last allSets
 
 instance Enum Set where
   fromEnum set =
-    fromIntegral $
-      HashMap.lookupDefault
+    fromIntegral
+      $ HashMap.lookupDefault
         (error "Set.fromEnum: bad argument")
         set
         allSetsAsHashMap
-  toEnum n = allSets !! n
+  toEnum n = allSets Unsafe.!! n
 
 toTiles :: Set -> [Tile]
 toTiles (Set set) = set
@@ -53,9 +54,9 @@ allSets = seqSets ++ colorSets
       , s <- [3 .. 5]
       ]
   colorSets =
-    concat $
-      [generateAllColorSets j 4 | j <- [minSingleTileCount .. maxSingleTileCount]]
-        ++ [generateAllColorSets j 3 | j <- [minSingleTileCount .. (maxSingleTileCount - 1)]]
+    concat
+      $ [generateAllColorSets j 4 | j <- [minSingleTileCount .. maxSingleTileCount]]
+      ++ [generateAllColorSets j 3 | j <- [minSingleTileCount .. (maxSingleTileCount - 1)]]
 
 -- Keeping the index to help with Enum.
 allSetsAsHashMap :: HashMap Set Natural
@@ -77,7 +78,7 @@ generateAllSeqSets color jokerCount setSize =
       )
       ( generateCombinations
           [fromIntegral begVal + 1 .. fromIntegral maxIntervalValue]
-          (setSize - fromIntegral jokerCount - 1)
+          (fromIntegral setSize - jokerCount - 1)
       )
    where
     maxIntervalValue = min maxValue $ begVal + setSize - 1
@@ -89,6 +90,6 @@ generateAllColorSets jokerCount setSize = do
   let (set :: [Tile]) = jokers ++ map (\c -> ValueTile (value, c)) colorComb
   return $ Set set
  where
-  colorCombs = generateCombinations allColors $ setSize - fromIntegral jokerCount
+  colorCombs = generateCombinations allColors $ fromIntegral setSize - jokerCount
   jokers :: [Tile]
   jokers = replicate (fromIntegral jokerCount) Joker

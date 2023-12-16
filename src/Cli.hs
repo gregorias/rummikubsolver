@@ -2,7 +2,6 @@
 module Cli (main) where
 
 import Control.Applicative
-import Control.Monad.State (evalStateT)
 import Game (initialRummikubState)
 import Interface.Console (game)
 import Interface.GUI qualified as GUI
@@ -23,6 +22,7 @@ import Options.Applicative (
   value,
  )
 import Options.Applicative qualified
+import Relude
 
 data Config
   = Cli

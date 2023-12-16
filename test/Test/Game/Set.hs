@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Test.Game.Set (tests) where
 
 import Game.Set (allSets)

@@ -49,6 +49,7 @@ library
       GADTs
       LambdaCase
       MultiWayIf
+      NoImplicitPrelude
       OverloadedLabels
       OverloadedRecordDot
       OverloadedStrings
@@ -87,6 +88,7 @@ executable rummikubsolver
       GADTs
       LambdaCase
       MultiWayIf
+      NoImplicitPrelude
       OverloadedLabels
       OverloadedRecordDot
       OverloadedStrings
@@ -97,6 +99,7 @@ executable rummikubsolver
   build-depends:
       base >=4.14 && <5
     , mtl
+    , relude
     , rummikubsolver
     , safe
   default-language: GHC2021
@@ -122,6 +125,7 @@ test-suite test-rummikubsolver
       GADTs
       LambdaCase
       MultiWayIf
+      NoImplicitPrelude
       OverloadedLabels
       OverloadedRecordDot
       OverloadedStrings

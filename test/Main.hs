@@ -1,3 +1,4 @@
+import Relude
 import Test.Closed.Extra qualified
 import Test.Combinatorics qualified
 import Test.Game qualified

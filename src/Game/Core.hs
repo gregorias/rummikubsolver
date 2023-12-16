@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 -- | Core primitives for representing a Rummikub game.
 module Game.Core (
   -- * Data types

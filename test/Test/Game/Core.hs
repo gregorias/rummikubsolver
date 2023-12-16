@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Test.Game.Core (tests) where
 
 import Data.HashSet qualified as HashSet

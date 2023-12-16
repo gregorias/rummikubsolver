@@ -8,6 +8,7 @@ import Control.Monad
 import Data.Maybe
 import Game qualified
 import Game.Core qualified as Game
+import Relude
 import Test.HUnit qualified as HU
 
 tests :: HU.Test
@@ -65,4 +66,4 @@ shouldSolveTheRummikubCompletely = HU.TestCase $ do
   rummikubStateMay =
     foldr ((<=<) . Game.modifyRackMay 1) Just tilesOnRack
       <=< foldr ((<=<) . Game.modifyTableMay 1) Just tilesOnTable
-      $ Game.initialRummikubState
+        $ Game.initialRummikubState

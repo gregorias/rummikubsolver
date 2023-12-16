@@ -2,7 +2,6 @@ module Interface.Console (
   game,
 ) where
 
-import Control.Monad.State.Lazy
 import Data.Array.IArray qualified as Array
 import Game (
   RummikubState,
@@ -20,6 +19,8 @@ import Game.Core (
  )
 import Game.Set qualified as Set
 import Interface.Common
+import Relude
+import Relude.Unsafe qualified as Unsafe
 import Safe qualified
 
 type Game = StateT RummikubState IO ()
@@ -94,7 +95,7 @@ restartCommand = put initialRummikubState
 game :: Game
 game = do
   liftIO putCommandPrompt
-  menuOption <- head <$> liftIO getLine
+  menuOption <- Unsafe.head . toString <$> liftIO getLine
   liftIO $ putStrLn ""
   let action =
         Safe.headDef game
@@ -111,7 +112,7 @@ readTiles = do
         ++ "where TILE ::= [-] COLOR VALUE, COLOR ::= [rlyb]+, "
         ++ "VALUE ::= INT | INT - INT (write '-' to remove the tile): "
     )
-  parseTiles <$> getLine
+  parseTiles . toString <$> getLine
 
 separateWithAComma :: [String] -> String
 separateWithAComma (x : y : xs) = x ++ ", " ++ separateWithAComma (y : xs)
@@ -123,7 +124,7 @@ class PrettyPrint a where
 
 instance PrettyPrint Tile where
   prettyPrint Joker = "Joker"
-  prettyPrint (ValueTile (i, c)) = show c ++ "[" ++ show @Int (fromIntegral i) ++ "]"
+  prettyPrint (ValueTile (i, c)) = show c ++ "[" ++ show (fromIntegral i) ++ "]"
 
 instance PrettyPrint TileArray where
   prettyPrint arr =

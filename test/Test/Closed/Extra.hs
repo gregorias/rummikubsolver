@@ -1,6 +1,7 @@
 module Test.Closed.Extra (tests) where
 
 import Closed.Extra (closedEither)
+import Relude
 import Test.Hspec (SpecWith, describe, it)
 import Test.Hspec.Expectations.Pretty (shouldBe)
 

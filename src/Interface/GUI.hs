@@ -15,7 +15,7 @@ import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
 import Interface.Common
 import Reactive.Threepenny qualified as FRP
-import Relude ((<<$>>))
+import Relude hiding (Set, get, on)
 
 data GUIConfig = GUIConfig
   { guiPort :: Int
@@ -54,14 +54,14 @@ setup window = do
       rackBehavior = fmap (Game.tileArrayElems . Game.rack) stateBehavior
 
   (solutionEvent, solutionHandler) <- liftIO FRP.newEvent
-  void $
-    liftIO $
-      FRP.register
-        stateEvent
-        ( \stateArg -> do
-            maybeSolution <- Game.solveRummikubState stateArg
-            maybe (solutionHandler ([], [])) solutionHandler maybeSolution
-        )
+  void
+    $ liftIO
+    $ FRP.register
+      stateEvent
+      ( \stateArg -> do
+          maybeSolution <- Game.solveRummikubState stateArg
+          maybe (solutionHandler ([], [])) solutionHandler maybeSolution
+      )
   solutionBehavior <- FRP.stepper ([], []) solutionEvent
   let solutionSetsBehavior = fmap fst solutionBehavior
       solutionTilesBehavior = fmap snd solutionBehavior
@@ -95,14 +95,14 @@ setup window = do
   setsBox <- setsDiv (Set.toTiles <<$>> solutionSetsBehavior)
   placedTilesBox <- placedTilesDiv solutionTilesBehavior
 
-  void $
-    getBody window
-      #+ [ element windowTitle
-         , element tableTileTableWrap
-         , element rackTileTableWrap
-         , element setsBox
-         , element placedTilesBox
-         ]
+  void
+    $ getBody window
+    #+ [ element windowTitle
+       , element tableTileTableWrap
+       , element rackTileTableWrap
+       , element setsBox
+       , element placedTilesBox
+       ]
 
 -- | Configure a command row
 commandRow ::
@@ -115,8 +115,8 @@ commandRow prompt modifyFunction stateChangeHandler = do
   inputBox <- UI.input
   button <- UI.button # set UI.text "Modify" :: UI Element
 
-  on UI.click button $
-    \_ ->
+  on UI.click button
+    $ \_ ->
       let modifyTiles ::
             Int ->
             [Game.Tile] ->
@@ -167,7 +167,7 @@ tile tileArg =
  where
   tileText :: Game.Tile -> String
   tileText Game.Joker = "J"
-  tileText (Game.ValueTile (v, _)) = show @Int (fromIntegral v)
+  tileText (Game.ValueTile (v, _)) = show (fromIntegral v)
 
   tileColor :: Game.Tile -> String
   tileColor Game.Joker = "black"

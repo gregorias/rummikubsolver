@@ -33,6 +33,7 @@ default-extensions:
   - GADTs
   - LambdaCase
   - MultiWayIf
+  - NoImplicitPrelude
   - OverloadedLabels
   - OverloadedRecordDot
   - OverloadedStrings
@@ -83,6 +84,7 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - mtl
+      - relude
       - rummikubsolver
       - safe
 

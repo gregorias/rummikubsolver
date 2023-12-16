@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 -- | A hash map with default values.
 --
 -- A speed implementation just for convenience of having a default of 0 for representing counts.

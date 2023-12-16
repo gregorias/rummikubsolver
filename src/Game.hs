@@ -14,8 +14,6 @@ module Game (
   solveRummikubState,
 ) where
 
-import Control.Monad.IO.Class (MonadIO)
-import Control.Monad.State.Class (MonadState)
 import Data.Array.IArray
 import Data.Array.Unboxed (UArray)
 import Data.LinearProgram (
@@ -35,13 +33,15 @@ import Data.LinearProgram (
   varLeq,
  )
 import Data.LinearProgram.Common (Direction (..))
-import Data.Map.Lazy (Map, fromList, union)
+import Data.Map.Lazy (union)
 import Data.Map.Lazy qualified as Data.Map
 import Game.Core (
   Tile (..),
  )
 import Game.Set (Set, allSets)
 import Game.Set qualified as Set
+import Relude hiding (Set)
+import Relude.Unsafe qualified as Unsafe
 
 initSParameters :: (IArray a Int) => [Set] -> a (Int, Int) Int
 initSParameters sets =
@@ -54,7 +54,7 @@ initSParameters sets =
     concatMap
       (\(set, setTiles) -> map (fromEnum set,) (fromEnum <$> setTiles))
       setAndTiles
-  assocList = map (,undefined) arrayIndexes
+  assocList = map (,error "initSParameters") arrayIndexes
   setCount = length sets
   sArrayBounds = ((0, 0), (setCount, fromEnum (maxBound :: Tile)))
 
@@ -66,7 +66,7 @@ initModel ::
   m ()
 initModel sArr tableArg rackArg = do
   setDirection Max
-  setObjective $ fromList $ map (curry (,1) 0) [0 .. tileSize]
+  setObjective $ Relude.fromList $ map (curry (,1) 0) [0 .. tileSize]
   variableKinds setSize
   setVariableBounds setSize
   rackVariableBounds rackArg
@@ -118,12 +118,12 @@ tileConstraints sArr tableArg =
    where
     tileUsedInSetsCombination :: Map (Int, Int) Int
     tileUsedInSetsCombination =
-      fromList $
-        map
+      Relude.fromList
+        $ map
           (\setIndex -> ((1, setIndex), sArr ! (setIndex, tileIndex)))
           [0 .. setSize]
     tilesPlacedFromRack :: Map (Int, Int) Int
-    tilesPlacedFromRack = fromList [((0, tileIndex), -1)]
+    tilesPlacedFromRack = Relude.fromList [((0, tileIndex), -1)]
 
 solveModel ::
   (MonadIO m) =>
@@ -144,7 +144,7 @@ solveModel model = do
       )
       ([], [])
       . Data.Map.filter (> 0)
-  setIdxToSet = (!!) allSets
+  setIdxToSet = (Unsafe.!!) allSets
 
 --- Game State
 type TileArray = UArray Int Int

@@ -1,18 +1,17 @@
 module Interface.Common (parseTiles) where
 
 import Closed.Extra (closedEither)
-import Control.Monad (when)
-import Data.Either (lefts, rights)
 import Data.Either.Extra (mapLeft)
-import Data.List (partition)
-import Data.Maybe (fromJust, isNothing, mapMaybe)
-import Data.Text (Text, unpack)
+import Data.List (head, partition, tail)
+import Data.List.Extra (lookup)
+import Data.Text (unpack)
 import Data.Text qualified as Text
 import Game.Core (
   Color (..),
   Tile (..),
   Value,
  )
+import Relude hiding (head, tail)
 import Safe qualified
 
 -- | Parse a list of tile specifications from input.
@@ -60,10 +59,10 @@ parseTiles input =
             || null bounds
             || any isNothing bounds
             then []
-            else
-              if length bounds == 2
-                then [(fromJust $ head bounds) .. (fromJust $ bounds !! 1)]
-                else [fromJust $ head bounds]
+            else case bounds of
+              [Just a, Just b] -> [a .. b]
+              [Just a] -> [a]
+              _ -> []
   tileStrings =
     map (Text.unpack . Text.strip)
       . Text.splitOn (Text.pack ",")
