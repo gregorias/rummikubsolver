@@ -4,6 +4,7 @@
 module Game.Core (
   -- * Data types
   Color (..),
+  allColors,
   Value,
   minValue,
   maxValue,
@@ -18,6 +19,9 @@ import Relude hiding (Set)
 
 -- | The color of a tile.
 data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Generic, Show)
+
+allColors :: [Color]
+allColors = enumFrom $ toEnum 0
 
 instance Hashable Color
 
