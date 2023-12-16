@@ -21,6 +21,7 @@ data TileChangeCommand = TileChangeCommand
   { tccRemove :: ![Tile]
   , tccAdd :: ![Tile]
   }
+  deriving stock (Eq, Show)
 
 -- | Parse a list of tile specifications from input.
 parseTileChangeCommand :: Text -> TileChangeCommand
