@@ -13,7 +13,10 @@ import Game.Core qualified as Game
 import Game.Set qualified as Set
 import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
-import Interface.Common
+import Interface.TileChangeCommand (
+  TileChangeCommand (..),
+  parseTiles,
+ )
 import Reactive.Threepenny qualified as FRP
 import Relude hiding (Set, get, on)
 

@@ -1,4 +1,4 @@
-module Interface.Common (
+module Interface.TileChangeCommand (
   TileChangeCommand (..),
   parseTiles,
 ) where

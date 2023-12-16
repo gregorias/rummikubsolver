@@ -18,7 +18,10 @@ import Game.Core (
   Tile (..),
  )
 import Game.Set qualified as Set
-import Interface.Common
+import Interface.TileChangeCommand (
+  TileChangeCommand (..),
+  parseTiles,
+ )
 import Relude
 import Relude.Unsafe qualified as Unsafe
 import Safe qualified

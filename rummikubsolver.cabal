@@ -33,9 +33,9 @@ library
       Game
       Game.Core
       Game.Set
-      Interface.Common
       Interface.Console
       Interface.GUI
+      Interface.TileChangeCommand
   other-modules:
       Paths_rummikubsolver
   hs-source-dirs:
