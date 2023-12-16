@@ -7,8 +7,6 @@ module Game (
   RummikubState,
   table,
   rack,
-  minValue,
-  maxValue,
   initialRummikubState,
   tileArrayElems,
   modifyTableMay,
@@ -43,18 +41,15 @@ import Data.Map.Lazy (Map, fromList, union)
 import Data.Map.Lazy qualified as Data.Map
 import Game.Core (
   Color (..),
-  Set,
   Tile (..),
   allValues,
+  maxSingleTileCount,
   maxValue,
+  minSingleTileCount,
   minValue,
  )
-
-minJoker :: Int
-minJoker = 0
-
-maxJoker :: Int
-maxJoker = 2
+import Game.Set (Set)
+import Relude (Natural)
 
 allColors :: [Color]
 allColors = enumFrom $ toEnum 0
@@ -66,37 +61,40 @@ allSets = seqSets ++ colorSets
     concat
       [ generateAllSeqSets c j s
       | c <- allColors
-      , j <- [minJoker .. maxJoker]
+      , j <- [minSingleTileCount .. maxSingleTileCount]
       , s <- [3 .. 5]
       ]
   colorSets =
     concat $
-      [generateAllColorSets j 4 | j <- [minJoker .. maxJoker]]
-        ++ [generateAllColorSets j 3 | j <- [minJoker .. (maxJoker - 1)]]
+      [generateAllColorSets j 4 | j <- [minSingleTileCount .. maxSingleTileCount]]
+        ++ [generateAllColorSets j 3 | j <- [minSingleTileCount .. (maxSingleTileCount - 1)]]
 
-generateAllSeqSets :: Color -> Int -> Int -> [[Tile]]
+generateAllSeqSets :: Color -> Natural -> Int -> [[Tile]]
 generateAllSeqSets color jokerCount setSize =
   concatMap
     generateSetsFrom
-    [minValue .. (maxValue - setSize + jokerCount + 1)]
+    [minValue .. (maxValue - setSize + fromIntegral jokerCount + 1)]
  where
   valuesToTiles = map (\value -> ValueTile (value, color))
   generateSetsFrom :: Int -> [[Tile]]
   generateSetsFrom begVal =
     map
-      (((++) (replicate jokerCount Joker) . valuesToTiles) . (fromIntegral begVal :))
-      (generateCombinations [(fromIntegral begVal + 1) .. fromIntegral maxIntervalValue] (setSize - jokerCount - 1))
+      (((++) (replicate (fromIntegral jokerCount) Joker) . valuesToTiles) . (fromIntegral begVal :))
+      ( generateCombinations
+          [fromIntegral begVal + 1 .. fromIntegral maxIntervalValue]
+          (setSize - fromIntegral jokerCount - 1)
+      )
    where
     maxIntervalValue = min maxValue $ begVal + setSize - 1
 
-generateAllColorSets :: Int -> Int -> [[Tile]]
+generateAllColorSets :: Natural -> Int -> [[Tile]]
 generateAllColorSets jokerCount setSize = do
   colorComb <- colorCombs
   value <- allValues
   return $ jokers ++ map (\c -> ValueTile (value, c)) colorComb
  where
-  colorCombs = generateCombinations allColors $ setSize - jokerCount
-  jokers = replicate jokerCount Joker
+  colorCombs = generateCombinations allColors $ setSize - fromIntegral jokerCount
+  jokers = replicate (fromIntegral jokerCount) Joker
 
 initSParameters :: (IArray a Int) => [Set] -> a (Int, Int) Int
 initSParameters sets =

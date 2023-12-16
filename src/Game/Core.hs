@@ -9,7 +9,8 @@ module Game.Core (
   maxValue,
   allValues,
   Tile (..),
-  Set,
+  minSingleTileCount,
+  maxSingleTileCount,
 ) where
 
 import Closed (Closed, unsafeClosed)
@@ -58,5 +59,8 @@ instance Enum Tile where
     v = n `mod` maxValue + 1
     c = toEnum $ n `div` maxValue
 
--- | A set of tiles. Doesn't verify whether it's a run or a group.
-type Set = [Tile]
+minSingleTileCount :: Natural
+minSingleTileCount = 0
+
+maxSingleTileCount :: Natural
+maxSingleTileCount = 2
