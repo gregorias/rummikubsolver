@@ -67,6 +67,12 @@ VALUE_RANGE ::= VALUE - VALUE
 
 ![screenshot](doc/rummikubsolver.jpg)
 
+## Acknowledgments
+
+The solver in this software is based on
+["Solving Rummikub Problems by Integer Linear Programming"
+by D. Den Hertog and P. B. Hulshof](https://doi.org/10.1093/comjnl/bxl033).
+
 ## Final remarks
 
 This program was done to train my Rummikub skills and as a helping tool for
