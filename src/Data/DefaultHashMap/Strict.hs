@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- | A hash map with default values.

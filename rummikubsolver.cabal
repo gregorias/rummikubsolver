@@ -50,6 +50,7 @@ library
       LambdaCase
       MultiWayIf
       OverloadedLabels
+      OverloadedRecordDot
       OverloadedStrings
       QuasiQuotes
       TypeFamilies
@@ -87,6 +88,7 @@ executable rummikubsolver
       LambdaCase
       MultiWayIf
       OverloadedLabels
+      OverloadedRecordDot
       OverloadedStrings
       QuasiQuotes
       TypeFamilies
@@ -121,6 +123,7 @@ test-suite test-rummikubsolver
       LambdaCase
       MultiWayIf
       OverloadedLabels
+      OverloadedRecordDot
       OverloadedStrings
       QuasiQuotes
       TypeFamilies
