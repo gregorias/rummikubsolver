@@ -55,7 +55,7 @@ putCommandPrompt = do
 
 modifyCommand :: (Int -> Tile -> RummikubState -> Maybe RummikubState) -> Game
 modifyCommand modifyFunction = do
-  (removedTiles, newTiles) <- liftIO readTiles
+  (TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles}) <- liftIO readTiles
   newStateMay <- (addTiles 1 newTiles <=< addTiles (-1) removedTiles) <$> get
   maybe
     (liftIO $ putStrLn "This modification would lead to invalid state.")
@@ -105,7 +105,7 @@ game = do
   action
 
 -- | Read a list of tile specifications from input.
-readTiles :: IO ([Tile], [Tile])
+readTiles :: IO TileChangeCommand
 readTiles = do
   putStrLn
     ( "Provide list of tiles in a form TILE [, TILE]*, \n"

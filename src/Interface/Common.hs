@@ -1,4 +1,7 @@
-module Interface.Common (parseTiles) where
+module Interface.Common (
+  TileChangeCommand (..),
+  parseTiles,
+) where
 
 import Closed.Extra (closedEither)
 import Data.Either.Extra (mapLeft)
@@ -14,12 +17,17 @@ import Game.Core (
 import Relude hiding (head, tail)
 import Safe qualified
 
+data TileChangeCommand = TileChangeCommand
+  { tccRemove :: ![Tile]
+  , tccAdd :: ![Tile]
+  }
+
 -- | Parse a list of tile specifications from input.
-parseTiles :: String -> ([Tile], [Tile])
+parseTiles :: String -> TileChangeCommand
 parseTiles input =
   if not (null (lefts tiles))
-    then ([], [])
-    else (concat $ rights removeTiles, concat $ rights addTiles)
+    then TileChangeCommand [] []
+    else TileChangeCommand (concat $ rights removeTiles) (concat $ rights addTiles)
  where
   tileStringToTile :: String -> Either String [Tile]
   tileStringToTile tileString
