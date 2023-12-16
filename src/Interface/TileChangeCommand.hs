@@ -1,6 +1,6 @@
 module Interface.TileChangeCommand (
   TileChangeCommand (..),
-  parseTiles,
+  parseTileChangeCommand,
 ) where
 
 import Closed.Extra (closedEither)
@@ -23,8 +23,8 @@ data TileChangeCommand = TileChangeCommand
   }
 
 -- | Parse a list of tile specifications from input.
-parseTiles :: Text -> TileChangeCommand
-parseTiles input =
+parseTileChangeCommand :: Text -> TileChangeCommand
+parseTileChangeCommand input =
   if not (null (lefts tiles))
     then TileChangeCommand [] []
     else TileChangeCommand (concat $ rights removeTiles) (concat $ rights addTiles)

@@ -15,7 +15,7 @@ import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
 import Interface.TileChangeCommand (
   TileChangeCommand (..),
-  parseTiles,
+  parseTileChangeCommand,
  )
 import Reactive.Threepenny qualified as FRP
 import Relude hiding (Set, get, on)
@@ -131,7 +131,8 @@ commandRow prompt modifyFunction stateChangeHandler = do
           modifyTiles count = foldr ((>=>) . modifyFunction count) Just
        in do
             inputString <- inputBox # get value :: UI String
-            let TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles} = parseTiles (fromString inputString)
+            let TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles} =
+                  parseTileChangeCommand (fromString inputString)
                 modifyFunctionSafe =
                   modifyMaybeSafe
                     (modifyTiles 1 newTiles <=< modifyTiles (-1) removedTiles)

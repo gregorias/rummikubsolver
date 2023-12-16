@@ -20,7 +20,7 @@ import Game.Core (
 import Game.Set qualified as Set
 import Interface.TileChangeCommand (
   TileChangeCommand (..),
-  parseTiles,
+  parseTileChangeCommand,
  )
 import Relude
 import Relude.Unsafe qualified as Unsafe
@@ -115,7 +115,7 @@ readTiles = do
         ++ "where TILE ::= [-] COLOR VALUE, COLOR ::= [rlyb]+, "
         ++ "VALUE ::= INT | INT - INT (write '-' to remove the tile): "
     )
-  parseTiles <$> getLine
+  parseTileChangeCommand <$> getLine
 
 separateWithAComma :: [String] -> String
 separateWithAComma (x : y : xs) = x ++ ", " ++ separateWithAComma (y : xs)
