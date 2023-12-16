@@ -55,7 +55,7 @@ instance Enum Tile where
   fromEnum Joker = 4 * maxValue
 
   toEnum n
-    | n < 0 || n > 4 * maxValue = Joker
+    | n < 0 || n > 4 * maxValue = error "Tile.toEnum: bad argument"
     | n == 4 * maxValue = Joker
     | otherwise = ValueTile (unsafeClosed (fromIntegral v), c)
    where
