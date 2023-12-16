@@ -25,12 +25,13 @@ module Data.DefaultHashMap.Strict (
 ) where
 
 import Data.HashMap.Strict qualified as HM
-import Relude (Functor (..), Hashable, flip)
+import Relude (Eq, Functor (..), Generic, Hashable, Show, Typeable, flip)
 
 data DefaultHashMap k v = DefaultHashMap
   { dhmDefault :: !v
   , dhmMap :: !(HM.HashMap k v)
   }
+  deriving stock (Eq, Generic, Show, Typeable)
 
 insertedEntries :: DefaultHashMap k v -> HM.HashMap k v
 insertedEntries = dhmMap
