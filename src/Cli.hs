@@ -28,12 +28,12 @@ data Config
   = Cli
   | Gui ConfigGui
 
-data ConfigGui = ConfigGui {cgPort :: !Int, cgCss :: !String}
+data ConfigGui = ConfigGui {cgPort :: !Int, cgCss :: !Text}
 
 defaultPort :: Int
 defaultPort = 8080
 
-defaultCss :: String
+defaultCss :: Text
 defaultCss = "resources"
 
 guiP :: Options.Applicative.Parser ConfigGui
@@ -50,7 +50,7 @@ guiP =
       auto
       ( long "css"
           <> metavar "PATH"
-          <> help ("The directory containing the css/main.css file.\ndefault=" <> defaultCss)
+          <> help ("The directory containing the css/main.css file.\ndefault=" <> toString defaultCss)
           <> value defaultCss
       )
 
@@ -74,4 +74,4 @@ main = do
   case config of
     Cli -> evalStateT game initialRummikubState
     Gui (ConfigGui{cgPort = port, cgCss = css}) ->
-      GUI.game GUI.defaultGUIConfig{GUI.guiPort = port, GUI.guiCssPath = css}
+      GUI.game GUI.defaultGUIConfig{GUI.guiPort = port, GUI.guiCssPath = toString css}
