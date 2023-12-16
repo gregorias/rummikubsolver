@@ -107,6 +107,7 @@ test-suite test-rummikubsolver
       Test.Combinatorics
       Test.Game
       Test.Game.Core
+      Test.Game.Set
       Paths_rummikubsolver
   hs-source-dirs:
       test

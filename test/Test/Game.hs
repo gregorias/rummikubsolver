@@ -13,8 +13,7 @@ import Test.HUnit qualified as HU
 tests :: HU.Test
 tests =
   HU.TestList
-    [ HU.TestLabel "shouldBe1173Sets" shouldBe1173Sets
-    , HU.TestLabel
+    [ HU.TestLabel
         "shouldReturnNothingOnInvalidMoves0"
         shouldReturnNothingOnInvalidMoves0
     , HU.TestLabel
@@ -24,9 +23,6 @@ tests =
         "shouldSolveTheRummikubCompletely"
         shouldSolveTheRummikubCompletely
     ]
-
-shouldBe1173Sets :: HU.Test
-shouldBe1173Sets = 1173 HU.~=? length Game.allSets
 
 shouldReturnNothingOnInvalidMoves0 :: HU.Test
 shouldReturnNothingOnInvalidMoves0 =

@@ -12,10 +12,8 @@ module Game (
   modifyTableMay,
   modifyRackMay,
   solveRummikubState,
-  allSets,
 ) where
 
-import Combinatorics (generateCombinations)
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.State.Class (MonadState)
 import Data.Array.IArray
@@ -40,70 +38,22 @@ import Data.LinearProgram.Common (Direction (..))
 import Data.Map.Lazy (Map, fromList, union)
 import Data.Map.Lazy qualified as Data.Map
 import Game.Core (
-  Color (..),
   Tile (..),
-  allValues,
-  maxSingleTileCount,
-  maxValue,
-  minSingleTileCount,
-  minValue,
  )
-import Game.Set (Set)
-import Relude (Natural)
-
-allColors :: [Color]
-allColors = enumFrom $ toEnum 0
-
-allSets :: [Set]
-allSets = seqSets ++ colorSets
- where
-  seqSets =
-    concat
-      [ generateAllSeqSets c j s
-      | c <- allColors
-      , j <- [minSingleTileCount .. maxSingleTileCount]
-      , s <- [3 .. 5]
-      ]
-  colorSets =
-    concat $
-      [generateAllColorSets j 4 | j <- [minSingleTileCount .. maxSingleTileCount]]
-        ++ [generateAllColorSets j 3 | j <- [minSingleTileCount .. (maxSingleTileCount - 1)]]
-
-generateAllSeqSets :: Color -> Natural -> Int -> [[Tile]]
-generateAllSeqSets color jokerCount setSize =
-  concatMap
-    generateSetsFrom
-    [minValue .. (maxValue - setSize + fromIntegral jokerCount + 1)]
- where
-  valuesToTiles = map (\value -> ValueTile (value, color))
-  generateSetsFrom :: Int -> [[Tile]]
-  generateSetsFrom begVal =
-    map
-      (((++) (replicate (fromIntegral jokerCount) Joker) . valuesToTiles) . (fromIntegral begVal :))
-      ( generateCombinations
-          [fromIntegral begVal + 1 .. fromIntegral maxIntervalValue]
-          (setSize - fromIntegral jokerCount - 1)
-      )
-   where
-    maxIntervalValue = min maxValue $ begVal + setSize - 1
-
-generateAllColorSets :: Natural -> Int -> [[Tile]]
-generateAllColorSets jokerCount setSize = do
-  colorComb <- colorCombs
-  value <- allValues
-  return $ jokers ++ map (\c -> ValueTile (value, c)) colorComb
- where
-  colorCombs = generateCombinations allColors $ setSize - fromIntegral jokerCount
-  jokers = replicate (fromIntegral jokerCount) Joker
+import Game.Set (Set, allSets)
+import Game.Set qualified as Set
 
 initSParameters :: (IArray a Int) => [Set] -> a (Int, Int) Int
 initSParameters sets =
   accumArray (\count _ -> count + 1) 0 sArrayBounds assocList
  where
-  setToIndexes = map fromEnum
-  setsWithIndexes = zip [0 ..] $ map setToIndexes sets
+  setAndTiles :: [(Set, [Tile])]
+  setAndTiles = map (\set -> (set, Set.toTiles set)) sets
   arrayIndexes :: [(Int, Int)]
-  arrayIndexes = concatMap (\(v, set) -> map (v,) set) setsWithIndexes
+  arrayIndexes =
+    concatMap
+      (\(set, setTiles) -> map (fromEnum set,) (fromEnum <$> setTiles))
+      setAndTiles
   assocList = map (,undefined) arrayIndexes
   setCount = length sets
   sArrayBounds = ((0, 0), (setCount, fromEnum (maxBound :: Tile)))

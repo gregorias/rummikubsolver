@@ -10,10 +10,12 @@ import Control.Monad
 import Data.Maybe qualified
 import Game qualified
 import Game.Core qualified as Game
+import Game.Set qualified as Set
 import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
 import Interface.Common
 import Reactive.Threepenny qualified as FRP
+import Relude ((<<$>>))
 
 data GUIConfig = GUIConfig
   { guiPort :: Int
@@ -90,7 +92,7 @@ setup window = do
       #. "tileTableWrap"
       #+ [element rackTileTable, element rackCommandBar]
 
-  setsBox <- setsDiv solutionSetsBehavior
+  setsBox <- setsDiv (Set.toTiles <<$>> solutionSetsBehavior)
   placedTilesBox <- placedTilesDiv solutionTilesBehavior
 
   void $

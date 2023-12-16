@@ -18,6 +18,7 @@ import Game.Core (
   Color (..),
   Tile (..),
  )
+import Game.Set qualified as Set
 import Interface.Common
 import Safe qualified
 
@@ -72,7 +73,7 @@ solveCommand = do
     case maybeSetsAndTiles of
       Nothing -> putStrLn "The linear solver could not solve current state."
       Just (ss, ts) -> do
-        putStrLn ("Found sets:\n" ++ prettyPrintSets ss)
+        putStrLn ("Found sets:\n" ++ prettyPrintSets (Set.toTiles <$> ss))
         putStrLn ("Tiles placed from rack: " ++ prettyPrintTiles ts)
         putStrLn ""
  where
