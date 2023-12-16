@@ -112,7 +112,7 @@ readTiles = do
         ++ "where TILE ::= [-] COLOR VALUE, COLOR ::= [rlyb]+, "
         ++ "VALUE ::= INT | INT - INT (write '-' to remove the tile): "
     )
-  parseTiles . toString <$> getLine
+  parseTiles <$> getLine
 
 separateWithAComma :: [String] -> String
 separateWithAComma (x : y : xs) = x ++ ", " ++ separateWithAComma (y : xs)

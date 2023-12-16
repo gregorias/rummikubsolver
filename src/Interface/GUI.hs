@@ -128,7 +128,7 @@ commandRow prompt modifyFunction stateChangeHandler = do
           modifyTiles count = foldr ((>=>) . modifyFunction count) Just
        in do
             inputString <- inputBox # get value :: UI String
-            let TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles} = parseTiles inputString
+            let TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles} = parseTiles (fromString inputString)
                 modifyFunctionSafe =
                   modifyMaybeSafe
                     (modifyTiles 1 newTiles <=< modifyTiles (-1) removedTiles)

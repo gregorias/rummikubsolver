@@ -23,7 +23,7 @@ data TileChangeCommand = TileChangeCommand
   }
 
 -- | Parse a list of tile specifications from input.
-parseTiles :: String -> TileChangeCommand
+parseTiles :: Text -> TileChangeCommand
 parseTiles input =
   if not (null (lefts tiles))
     then TileChangeCommand [] []
@@ -74,7 +74,6 @@ parseTiles input =
   tileStrings =
     map (Text.unpack . Text.strip)
       . Text.splitOn (Text.pack ",")
-      . Text.pack
       $ input
   (removeStrings, addStrings) =
     partition
