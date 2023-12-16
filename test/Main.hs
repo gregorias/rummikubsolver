@@ -6,6 +6,7 @@ import Test.Game.Core qualified
 import Test.Game.Set qualified
 import Test.Hspec (hspec)
 import Test.Hspec.Contrib.HUnit (fromHUnitTest)
+import Test.Interface.TileChangeCommand qualified
 
 main :: IO ()
 main = hspec $ do
@@ -14,3 +15,4 @@ main = hspec $ do
   Test.Combinatorics.tests
   Test.Game.Core.tests
   Test.Game.Set.tests
+  Test.Interface.TileChangeCommand.tests
