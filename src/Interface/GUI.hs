@@ -8,6 +8,7 @@ module Interface.GUI (
 
 import Control.Monad
 import Data.Maybe qualified
+import Game (RummikubState)
 import Game qualified
 import Game.Core qualified as Game
 import Game.Set qualified as Set
@@ -15,7 +16,7 @@ import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
 import Interface.TileChangeCommand (
   TileChangeCommand (..),
-  parseTileChangeCommand,
+  parseTileChangeCommands,
  )
 import Reactive.Threepenny qualified as FRP
 import Relude hiding (Set, get, on)
@@ -120,22 +121,17 @@ commandRow prompt modifyFunction stateChangeHandler = do
 
   on UI.click button
     $ \_ ->
-      let modifyTiles ::
-            Int ->
-            [Game.Tile] ->
-            Game.RummikubState ->
-            Maybe Game.RummikubState
-          modifyMaybeSafe :: (s -> Maybe s) -> s -> s
+      let modifyMaybeSafe :: (s -> Maybe s) -> s -> s
           modifyMaybeSafe modifyFun state =
             Data.Maybe.fromMaybe state $ modifyFun state
-          modifyTiles count = foldr ((>=>) . modifyFunction count) Just
        in do
             inputString <- inputBox # get value :: UI String
-            let TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles} =
-                  parseTileChangeCommand (fromString inputString)
-                modifyFunctionSafe =
-                  modifyMaybeSafe
-                    (modifyTiles 1 newTiles <=< modifyTiles (-1) removedTiles)
+            let (tileChangeCommands :: [TileChangeCommand]) =
+                  fromMaybe [] $ parseTileChangeCommands (fromString inputString)
+                (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
+                  Add tile -> modifyFunction 1 tile
+                  Remove tile -> modifyFunction (-1) tile
+                modifyFunctionSafe = modifyMaybeSafe (\state -> foldl' (>>=) (Just state) changes)
             liftIO $ stateChangeHandler modifyFunctionSafe
   UI.div #+ [element promptElement, element inputBox, element button]
 

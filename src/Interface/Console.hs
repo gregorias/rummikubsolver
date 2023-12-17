@@ -20,7 +20,7 @@ import Game.Core (
 import Game.Set qualified as Set
 import Interface.TileChangeCommand (
   TileChangeCommand (..),
-  parseTileChangeCommand,
+  parseTileChangeCommands,
  )
 import Relude
 import Relude.Unsafe qualified as Unsafe
@@ -58,16 +58,17 @@ putCommandPrompt = do
 
 modifyCommand :: (Int -> Tile -> RummikubState -> Maybe RummikubState) -> Game
 modifyCommand modifyFunction = do
-  (TileChangeCommand{tccRemove = removedTiles, tccAdd = newTiles}) <- liftIO readTiles
-  newStateMay <- (addTiles 1 newTiles <=< addTiles (-1) removedTiles) <$> get
+  tileChangeCommands <- liftIO readTiles
+  currentState <- get
+  let (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
+        Add tiles -> modifyFunction 1 tiles
+        Remove tiles -> modifyFunction (-1) tiles
+  let newStateMay = foldl' (>>=) (Just currentState) changes
   maybe
     (liftIO $ putStrLn "This modification would lead to invalid state.")
     put
     newStateMay
   liftIO $ putStrLn ""
- where
-  addTiles :: Int -> [Tile] -> RummikubState -> Maybe RummikubState
-  addTiles count = foldr ((>=>) . modifyFunction count) Just
 
 solveCommand :: Game
 solveCommand = do
@@ -108,14 +109,14 @@ game = do
   action
 
 -- | Read a list of tile specifications from input.
-readTiles :: IO TileChangeCommand
+readTiles :: IO [TileChangeCommand]
 readTiles = do
   putStrLn
     ( "Provide list of tiles in a form TILE [, TILE]*, \n"
         ++ "where TILE ::= [-] COLOR VALUE, COLOR ::= [rlyb]+, "
         ++ "VALUE ::= INT | INT - INT (write '-' to remove the tile): "
     )
-  parseTileChangeCommand <$> getLine
+  fromMaybe [] . parseTileChangeCommands <$> getLine
 
 separateWithAComma :: [String] -> String
 separateWithAComma (x : y : xs) = x ++ ", " ++ separateWithAComma (y : xs)

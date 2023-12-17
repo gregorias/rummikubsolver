@@ -2,29 +2,32 @@ module Test.Interface.TileChangeCommand (tests) where
 
 import Data.HashSet qualified as HashSet
 import Game.Core (Color (..), Tile (..))
-import Interface.TileChangeCommand (TileChangeCommand (..), parseTileChangeCommand)
+import Interface.TileChangeCommand (
+  TileChangeCommand (..),
+  parseTileChangeCommands,
+ )
 import Relude
+import Test.HUnit.Extra (assertJust)
 import Test.Hspec (SpecWith, describe, it)
 import Test.Hspec.Expectations.Pretty (shouldBe)
 
 tests :: SpecWith ()
 tests = do
   describe "Interface.TileChangeCommand" $ do
-    describe "parseTileChangeCommand" $ do
+    describe "parseTileChangeCommands" $ do
       it "parses r13" $ do
-        parseTileChangeCommand "r13"
-          `shouldBe` TileChangeCommand
-            { tccRemove = []
-            , tccAdd = [ValueTile (13, Red)]
-            }
+        parseTileChangeCommands "r13"
+          `shouldBe` Just [Add (ValueTile (13, Red))]
 
       it "parses -yl9-10,j,b4" $ do
-        let tcc = parseTileChangeCommand "-yl9-10,j,b4"
-        HashSet.fromList tcc.tccRemove
+        let tccsMaybe = parseTileChangeCommands "-yl9-10,j,b4"
+        tccs <- assertJust tccsMaybe
+        HashSet.fromList tccs
           `shouldBe` HashSet.fromList
-            [ ValueTile (9, Yellow)
-            , ValueTile (10, Yellow)
-            , ValueTile (9, Blue)
-            , ValueTile (10, Blue)
+            [ Remove $ ValueTile (9, Yellow)
+            , Remove $ ValueTile (10, Yellow)
+            , Remove $ ValueTile (9, Blue)
+            , Remove $ ValueTile (10, Blue)
+            , Add Joker
+            , Add $ ValueTile (4, Black)
             ]
-        HashSet.fromList tcc.tccAdd `shouldBe` HashSet.fromList [Joker, ValueTile (4, Black)]

@@ -115,6 +115,7 @@ test-suite test-rummikubsolver
       Test.Game
       Test.Game.Core
       Test.Game.Set
+      Test.HUnit.Extra
       Test.Interface.TileChangeCommand
       Paths_rummikubsolver
   hs-source-dirs:
