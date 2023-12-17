@@ -1,6 +1,6 @@
 module Data.List.Extra (
   partition,
-  PartitionSelect,
+  PartitionSelect (..),
 ) where
 
 import Relude (foldr)

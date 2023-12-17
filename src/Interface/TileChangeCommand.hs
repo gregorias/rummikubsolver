@@ -6,15 +6,15 @@ module Interface.TileChangeCommand (
 ) where
 
 import Closed (closed)
-import Data.List (head, partition, tail)
+import Data.List.Extra (PartitionSelect (..), partition)
 import Data.List.NonEmpty (some1)
-import Data.Text qualified as Text
 import Game.Core (
   Color (..),
   Tile (..),
   Value,
  )
 import Relude hiding (head, tail)
+import Text.Megaparsec (sepBy)
 import Text.Megaparsec qualified as MP
 import Text.Megaparsec.Char qualified as MP
 import Text.Megaparsec.Char.Lexer qualified as MP
@@ -30,23 +30,27 @@ type Parser = MP.Parsec Void Text
 -- | Parse a list of tile specifications from input.
 parseTileChangeCommand :: Text -> TileChangeCommand
 parseTileChangeCommand input =
-  if any isNothing tiles
-    then TileChangeCommand [] []
-    else TileChangeCommand (concatMap toList $ catMaybes removeTiles) (concatMap toList $ catMaybes addTiles)
- where
-  tileStringToTile :: Text -> Maybe (NonEmpty Tile)
-  tileStrings =
-    map (Text.unpack . Text.strip)
-      . Text.splitOn (Text.pack ",")
-      $ input
-  (removeStrings, addStrings) =
-    partition
-      ((&&) <$> not . null <*> (== '-') . head)
-      tileStrings
-  addTiles = map (tileStringToTile . fromString) addStrings
-  removeTiles = map (tileStringToTile . fromString . tail) removeStrings
-  tiles = removeTiles ++ addTiles
-  tileStringToTile = MP.parseMaybe tilesP
+  let (tcc'sMaybe :: Maybe [TileChangeCommand']) = MP.parseMaybe tileChangeCommandsP input
+   in maybe
+        (TileChangeCommand [] [])
+        ( \tcc's ->
+            let (addTiles, removeTiles) =
+                  partition (\case Add ts -> L ts; Remove ts -> R ts) tcc's
+             in TileChangeCommand (concat removeTiles) (concat addTiles)
+        )
+        tcc'sMaybe
+
+data TileChangeCommand' = Add ![Tile] | Remove ![Tile]
+
+tileChangeCommandsP :: Parser [TileChangeCommand']
+tileChangeCommandsP = MP.label "tile change commands" $ do
+  sepBy tileChangeCommandP (MP.string ",")
+
+tileChangeCommandP :: Parser TileChangeCommand'
+tileChangeCommandP = MP.label "tile change command" $ do
+  (op :: [Tile] -> TileChangeCommand') <- maybe Add (const Remove) <$> MP.optional (MP.string "-")
+  (tiles :: NonEmpty Tile) <- tilesP
+  return $ op (toList tiles)
 
 tilesP :: Parser (NonEmpty Tile)
 tilesP = MP.label "tile spec" $ (one <$> jokerP) <|> nonJokersP
