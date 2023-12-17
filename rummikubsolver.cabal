@@ -30,6 +30,7 @@ library
       Closed.Extra
       Combinatorics
       Data.DefaultHashMap.Strict
+      Data.List.Extra
       Game
       Game.Core
       Game.Set
