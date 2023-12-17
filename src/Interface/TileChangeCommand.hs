@@ -1,13 +1,13 @@
+{-# LANGUAGE OverloadedLists #-}
+
 module Interface.TileChangeCommand (
   TileChangeCommand (..),
   parseTileChangeCommand,
 ) where
 
-import Closed.Extra (closedEither)
-import Data.Either.Extra (mapLeft)
+import Closed (closed)
 import Data.List (head, partition, tail)
-import Data.List.Extra (lookup)
-import Data.Text (unpack)
+import Data.List.NonEmpty (some1)
 import Data.Text qualified as Text
 import Game.Core (
   Color (..),
@@ -15,7 +15,9 @@ import Game.Core (
   Value,
  )
 import Relude hiding (head, tail)
-import Safe qualified
+import Text.Megaparsec qualified as MP
+import Text.Megaparsec.Char qualified as MP
+import Text.Megaparsec.Char.Lexer qualified as MP
 
 data TileChangeCommand = TileChangeCommand
   { tccRemove :: ![Tile]
@@ -23,55 +25,16 @@ data TileChangeCommand = TileChangeCommand
   }
   deriving stock (Eq, Show)
 
+type Parser = MP.Parsec Void Text
+
 -- | Parse a list of tile specifications from input.
 parseTileChangeCommand :: Text -> TileChangeCommand
 parseTileChangeCommand input =
-  if not (null (lefts tiles))
+  if any isNothing tiles
     then TileChangeCommand [] []
-    else TileChangeCommand (concat $ rights removeTiles) (concat $ rights addTiles)
+    else TileChangeCommand (concatMap toList $ catMaybes removeTiles) (concatMap toList $ catMaybes addTiles)
  where
-  tileStringToTile :: String -> Either String [Tile]
-  tileStringToTile tileString
-    | null tileString = Left "Provided empty string. Empty string is invalid."
-    | tileString == "j" = Right [Joker]
-    | null colors = Left $ "Could not parse string: " ++ tileString
-    | otherwise = do
-        values <- mapLeft unpack valuesEither
-        when (null values) $ Left ("Could not parse string: " ++ tileString)
-        Right $ [ValueTile (v, c) | v <- values, c <- colors]
-   where
-    colorMap =
-      [ ('r', Red)
-      , ('l', Blue)
-      , ('y', Yellow)
-      , ('b', Black)
-      ]
-    colorChars = map fst colorMap
-    (colorsPrefix, valueSuffix) =
-      span (`elem` colorChars) tileString
-    colors :: [Color]
-    colors = mapMaybe (`lookup` colorMap) colorsPrefix
-    valuesEither :: Either Text [Value]
-    valuesEither = mapM (closedEither @1 @13 . fromIntegral) (parseIntSuffix valueSuffix)
-
-    -- \| Parses a string of the form "1-3" or "5" into a list of integers.
-    parseIntSuffix :: String -> [Int]
-    parseIntSuffix valueStr =
-      let bounds :: [Maybe Int]
-          bounds =
-            map (Safe.readMay . Text.unpack . Text.strip)
-              . Text.splitOn (Text.pack "-")
-              . Text.pack
-              $ valueStr
-       in if length bounds
-            > 2
-            || null bounds
-            || any isNothing bounds
-            then []
-            else case bounds of
-              [Just a, Just b] -> [a .. b]
-              [Just a] -> [a]
-              _ -> []
+  tileStringToTile :: Text -> Maybe (NonEmpty Tile)
   tileStrings =
     map (Text.unpack . Text.strip)
       . Text.splitOn (Text.pack ",")
@@ -80,6 +43,52 @@ parseTileChangeCommand input =
     partition
       ((&&) <$> not . null <*> (== '-') . head)
       tileStrings
-  addTiles = map tileStringToTile addStrings
-  removeTiles = map (tileStringToTile . tail) removeStrings
+  addTiles = map (tileStringToTile . fromString) addStrings
+  removeTiles = map (tileStringToTile . fromString . tail) removeStrings
   tiles = removeTiles ++ addTiles
+  tileStringToTile = MP.parseMaybe tilesP
+
+tilesP :: Parser (NonEmpty Tile)
+tilesP = MP.label "tile spec" $ (one <$> jokerP) <|> nonJokersP
+
+colorP :: Parser Color
+colorP = MP.label "color" $ asum [MP.string c >> return color | (c, color) <- colorMap]
+ where
+  colorMap =
+    [ ("r", Red)
+    , ("l", Blue)
+    , ("y", Yellow)
+    , ("b", Black)
+    ]
+
+colorsP :: Parser (NonEmpty Color)
+colorsP = MP.label "color spec" $ some1 colorP
+
+valueP :: Parser Value
+valueP = MP.label "value" $ do
+  val :: Integer <- MP.decimal
+  maybe
+    (fail $ "expected a value in the range of 1-13, but got " <> show val)
+    return
+    (closed val)
+
+valuesP :: Parser (NonEmpty Value)
+valuesP = MP.label "value spec" $ do
+  beg <- valueP
+  endMaybe <- optional (MP.char '-' >> valueP)
+  maybe
+    (return $ one beg)
+    (\end -> return [beg .. end])
+    endMaybe
+
+jokerP :: Parser Tile
+jokerP = MP.label "joker" $ MP.string "j" >> return Joker
+
+nonJokersP :: Parser (NonEmpty Tile)
+nonJokersP = MP.label "non-joker tile spec" $ do
+  colors <- colorsP
+  values <- valuesP
+  return $ do
+    color <- colors
+    value <- values
+    return $ ValueTile (value, color)

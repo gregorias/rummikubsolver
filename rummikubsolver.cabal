@@ -64,6 +64,7 @@ library
     , containers
     , extra
     , glpk-hs
+    , megaparsec
     , mtl
     , optparse-applicative
     , relude
