@@ -44,6 +44,18 @@ game config =
       }
     setup
 
+data SessionState = SessionState
+  { ssGameState :: RummikubState
+  , ssLastErrorMessage :: Maybe Text
+  }
+
+initialSessionState :: SessionState
+initialSessionState =
+  SessionState
+    { ssGameState = Game.initialRummikubState
+    , ssLastErrorMessage = Nothing
+    }
+
 setup :: Window -> UI ()
 setup window = do
   void $ return window # set UI.title "Rummikub Solver"
@@ -59,14 +71,20 @@ setup window = do
   rackCommandBar <- commandRow "Change rack: " Game.modifyRack userCommandHandler
 
   -- A state change event. We take in commands and ignore errors.
-  let (stateChangeEvent :: FRP.Event (RummikubState -> RummikubState)) =
-        userCommandEvent <&> (\command state -> command state & fromRight state)
+  let (sessionStateChangeEvent :: FRP.Event (SessionState -> SessionState)) =
+        userCommandEvent
+          <&> ( \command state ->
+                  let newRummikubStateEither = command state.ssGameState
+                      newErrorMessage = either Just (const Nothing) newRummikubStateEither
+                      newRummikubState = fromRight state.ssGameState newRummikubStateEither
+                   in SessionState{ssGameState = newRummikubState, ssLastErrorMessage = newErrorMessage}
+              )
 
   -- The authoritative game state.
-  stateEvent <- FRP.accumE Game.initialRummikubState stateChangeEvent
-  stateBehavior <- FRP.stepper Game.initialRummikubState stateEvent
-  let tableBehavior = fmap (TileCountArray.toElemList . Game.table) stateBehavior
-      rackBehavior = fmap (TileCountArray.toElemList . Game.rack) stateBehavior
+  sessionStateEvent <- FRP.accumE initialSessionState sessionStateChangeEvent
+  sessionStateBehavior <- FRP.stepper initialSessionState sessionStateEvent
+  let tableBehavior = fmap (TileCountArray.toElemList . Game.table . ssGameState) sessionStateBehavior
+      rackBehavior = fmap (TileCountArray.toElemList . Game.rack . ssGameState) sessionStateBehavior
 
   tableTileTable <- tileTable tableBehavior
   void $ element tableTileTable # set UI.id_ "tableGrid"
@@ -83,11 +101,13 @@ setup window = do
       #. "tileTableWrap"
       #+ [element rackTileTable, element rackCommandBar]
 
+  errorBoxRow <- errorBox (fromMaybe "" . ssLastErrorMessage <$> sessionStateBehavior)
+
   (solutionEvent, solutionHandler) <- liftIO FRP.newEvent
   void
     $ liftIO
     $ FRP.register
-      stateEvent
+      (ssGameState <$> sessionStateEvent)
       ( \stateArg -> do
           maybeSolution <- Game.solveRummikubState stateArg
           maybe (solutionHandler ([], [])) solutionHandler maybeSolution
@@ -104,11 +124,12 @@ setup window = do
     #+ [ element windowTitle
        , element tableTileTableWrap
        , element rackTileTableWrap
+       , element errorBoxRow
        , element setsBox
        , element placedTilesBox
        ]
 
--- | Create a row with a prompt to modify the state.
+-- | Creates a row with a prompt to modify the state.
 commandRow ::
   String ->
   (Int -> Game.Tile -> RummikubState -> Maybe RummikubState) ->
@@ -137,6 +158,19 @@ commandRow prompt modifyFunction commandHandler = do
           fun state = foldl' (>>=) (Just state) changes
       liftIO $ commandHandler (maybe (Left "Invalid state transition") Right . fun)
   UI.div #+ [element promptElement, element inputBox, element button]
+
+-- | Creates a box with an error message.
+errorBox ::
+  FRP.Behavior Text ->
+  UI Element
+errorBox message = do
+  let enabledBehavior = fmap (not . null . toString) message
+  let wrapperRaw = UI.div #. "errorBox"
+  let wrapper = sink style (enabledBehavior <&> (\enabled -> [("display", if enabled then "block" else "none")])) wrapperRaw
+  title <- UI.h3 # set text "Error"
+  let messageP = UI.p
+  messageP <- sink text (toString <$> message) messageP
+  wrapper #+ [element title, element messageP]
 
 -- | Returns the tile table element.
 tileTable ::
