@@ -13,7 +13,7 @@ import Data.Array.Unboxed (UArray)
 import Game.Core (Tile)
 import Relude hiding (empty)
 
--- | An array of tile countes.
+-- | An array of tile counts.
 --
 -- Guarantees that each count is nonnegative.
 --
