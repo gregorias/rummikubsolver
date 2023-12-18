@@ -5,9 +5,10 @@ module Game.TileCountArray (
   toElemList,
   tileCount,
   addCount,
+  union,
 ) where
 
-import Data.Array.Base (accum, assocs, listArray, (!))
+import Data.Array.Base (accum, assocs, elems, listArray, (!))
 import Data.Array.Unboxed (UArray)
 import Game.Core (Tile)
 import Relude hiding (empty)
@@ -38,9 +39,11 @@ addCount ::
   Tile ->
   TileCountArray ->
   Maybe TileCountArray
-addCount count tile tca@(TileCountArray a) = do
-  guard $ (a ! fromEnum tile) + count >= 0
-  return $ addCountUnsafe count tile tca
+addCount count tile tca = do
+  let newTca = addCountUnsafe count tile tca
+  let newCount = tileCount tile newTca
+  guard $ newCount >= 0 && newCount <= 2
+  return newTca
 
 addCountUnsafe ::
   Int ->
@@ -48,3 +51,9 @@ addCountUnsafe ::
   TileCountArray ->
   TileCountArray
 addCountUnsafe count tile (TileCountArray a) = TileCountArray $ accum (+) a [(fromEnum tile, count)]
+
+union :: TileCountArray -> TileCountArray -> Maybe TileCountArray
+union (TileCountArray a) (TileCountArray b) = do
+  let resultUnsafe = TileCountArray $ accum (+) a (assocs b)
+  guard $ all (<= 2) (elems . toRawArray $ resultUnsafe)
+  return resultUnsafe

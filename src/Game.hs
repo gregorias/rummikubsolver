@@ -42,7 +42,6 @@ import Game.TileCountArray (
   TileCountArray,
   addCount,
   tileCount,
-  toRawArray,
  )
 import Game.TileCountArray qualified as TileCountArray
 import Relude hiding (Set)
@@ -160,18 +159,8 @@ initialRummikubState :: RummikubState
 initialRummikubState =
   RummikubState TileCountArray.empty TileCountArray.empty
 
-isTileArrayConsistent :: UArray Int Int -> Bool
-isTileArrayConsistent = all (<= 2) . elems
-
 isRummikubStateConsistent :: RummikubState -> Bool
-isRummikubStateConsistent state =
-  isTileArrayConsistent tableArray
-    && isTileArrayConsistent rackArray
-    && isTileArrayConsistent combinedArrays
- where
-  tableArray = toRawArray state.table
-  rackArray = toRawArray state.rack
-  combinedArrays = accum (+) tableArray (assocs rackArray)
+isRummikubStateConsistent state = isJust $ TileCountArray.union state.table state.rack
 
 modifyTableMay :: Int -> Tile -> RummikubState -> Maybe RummikubState
 modifyTableMay count tile state = do
