@@ -119,7 +119,11 @@ readTiles = do
         ++ "where TILE ::= [-] COLOR VALUE, COLOR ::= [rlyb]+, "
         ++ "VALUE ::= INT | INT - INT (write '-' to remove the tile): "
     )
-  fromMaybe [] . parseTileChangeCommands <$> getLine
+  commandText <- getLine
+  parseTileChangeCommands commandText
+    & either
+      (\error -> putStrLn (toString error) >> return [])
+      return
 
 separateWithAComma :: [String] -> String
 separateWithAComma (x : y : xs) = x ++ ", " ++ separateWithAComma (y : xs)

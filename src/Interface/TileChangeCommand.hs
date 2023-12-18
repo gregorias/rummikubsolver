@@ -17,6 +17,7 @@ import Text.Megaparsec (sepBy)
 import Text.Megaparsec qualified as MP
 import Text.Megaparsec.Char qualified as MP
 import Text.Megaparsec.Char.Lexer qualified as MP
+import Text.Megaparsec.Extra qualified as MP
 
 data TileChangeCommand = Add !Tile | Remove !Tile
   deriving stock (Eq, Generic, Show)
@@ -26,8 +27,8 @@ instance Hashable TileChangeCommand
 type Parser = MP.Parsec Void Text
 
 -- | Parse a list of tile specifications.
-parseTileChangeCommands :: Text -> Maybe [TileChangeCommand]
-parseTileChangeCommands = MP.parseMaybe tileChangeCommandsP
+parseTileChangeCommands :: Text -> Either Text [TileChangeCommand]
+parseTileChangeCommands = MP.parsePretty tileChangeCommandsP "command"
 
 tileChangeCommandsP :: Parser [TileChangeCommand]
 tileChangeCommandsP = MP.label "tile change commands" $ do

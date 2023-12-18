@@ -7,7 +7,9 @@ import Interface.TileChangeCommand (
   parseTileChangeCommands,
  )
 import Relude
-import Test.HUnit.Extra (assertJust)
+import Test.HUnit.Extra (
+  assertRightOrFailPrint,
+ )
 import Test.Hspec (SpecWith, describe, it)
 import Test.Hspec.Expectations.Pretty (shouldBe)
 
@@ -17,11 +19,11 @@ tests = do
     describe "parseTileChangeCommands" $ do
       it "parses r13" $ do
         parseTileChangeCommands "r13"
-          `shouldBe` Just [Add (ValueTile (13, Red))]
+          `shouldBe` Right [Add (ValueTile (13, Red))]
 
       it "parses -yl9-10,j,b4" $ do
         let tccsMaybe = parseTileChangeCommands "-yl9-10,j,b4"
-        tccs <- assertJust tccsMaybe
+        tccs <- assertRightOrFailPrint tccsMaybe
         HashSet.fromList tccs
           `shouldBe` HashSet.fromList
             [ Remove $ ValueTile (9, Yellow)

@@ -150,13 +150,20 @@ commandRow prompt modifyFunction commandHandler = do
   on UI.click button
     $ \_ -> do
       inputString <- inputBox # get value :: UI String
-      let (tileChangeCommands :: [TileChangeCommand]) =
-            fromMaybe [] $ parseTileChangeCommands (fromString inputString)
-          (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
-            Add tile -> modifyFunction 1 tile
-            Remove tile -> modifyFunction (-1) tile
-          fun state = foldl' (>>=) (Just state) changes
-      liftIO $ commandHandler (maybe (Left "Invalid state transition") Right . fun)
+      runMaybeT $ do
+        (tileChangeCommands :: [TileChangeCommand]) <-
+          parseTileChangeCommands (fromString inputString)
+            & either
+              ( \error -> do
+                  liftIO $ commandHandler (const $ Left error)
+                  fail ""
+              )
+              return
+        let (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
+              Add tile -> modifyFunction 1 tile
+              Remove tile -> modifyFunction (-1) tile
+            fun state = foldl' (>>=) (Just state) changes
+        liftIO $ commandHandler (maybe (Left "Invalid state transition") Right . fun)
   UI.div #+ [element promptElement, element inputBox, element button]
 
 -- | Creates a box with an error message.

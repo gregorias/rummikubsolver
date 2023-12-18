@@ -39,6 +39,7 @@ library
       Interface.Console
       Interface.GUI
       Interface.TileChangeCommand
+      Text.Megaparsec.Extra
   other-modules:
       Paths_rummikubsolver
   hs-source-dirs:
