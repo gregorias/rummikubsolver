@@ -9,12 +9,12 @@ h1 {
 
 div.tileTableWrap {
   min-height: 71px;
-  margin: 5px auto;
+  margin: 2em auto;
 }
 
 div.tileTable {
   min-height: 71px;
-  margin: 5px 0px;
+  margin: 1em 0px;
 }
 
 div#tableGrid {
@@ -23,6 +23,11 @@ div#tableGrid {
 
 div#rackGrid {
   background-color: #f5f5dc;
+}
+
+.modifyButton {
+  margin: 0 0.5em;
+
 }
 
 div.table {

@@ -47,10 +47,10 @@ game config =
 
 setup :: Window -> UI ()
 setup window = do
-  void $ return window # set UI.title "rummikubsolver"
+  void $ return window # set UI.title "Rummikub Solver"
   UI.addStyleSheet window "main.css"
 
-  windowTitle <- UI.h1 # set text "rummikubsolver"
+  windowTitle <- UI.h1 # set text "Rummikub Solver"
 
   let state = Game.initialRummikubState
   (stateChangeEvent, stateChangeHandler) <- liftIO FRP.newEvent
@@ -119,7 +119,11 @@ commandRow ::
 commandRow prompt modifyFunction stateChangeHandler = do
   promptElement <- string prompt
   inputBox <- UI.input
-  button <- UI.button # set UI.text "Modify" :: UI Element
+  button <-
+    UI.button
+      #. "modifyButton"
+      # set UI.text "Modify" ::
+      UI Element
 
   on UI.click button
     $ \_ ->
