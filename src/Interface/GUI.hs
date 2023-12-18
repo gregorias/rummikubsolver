@@ -78,17 +78,9 @@ setup window = do
   rackTileTable <- tileTable rackBehavior
   void $ element rackTileTable # set UI.id_ "rackGrid"
 
-  tableCommandBar <-
-    commandRow
-      "Change table: "
-      Game.modifyTable
-      stateChangeHandler
+  tableCommandBar <- commandRow "Change table: " Game.modifyTable stateChangeHandler
+  rackCommandBar <- commandRow "Change rack: " Game.modifyRack stateChangeHandler
 
-  rackCommandBar <-
-    commandRow
-      "Change rack: "
-      Game.modifyRack
-      stateChangeHandler
   tableTileTableWrap <-
     UI.div
       #. "tileTableWrap"
@@ -141,8 +133,11 @@ commandRow prompt modifyFunction stateChangeHandler = do
             liftIO $ stateChangeHandler modifyFunctionSafe
   UI.div #+ [element promptElement, element inputBox, element button]
 
--- | Configure the tile table display.
-tileTable :: FRP.Behavior [Game.Tile] -> UI Element
+-- | Returns the tile table element.
+tileTable ::
+  -- | The tiles to display.
+  FRP.Behavior [Game.Tile] ->
+  UI Element
 tileTable tileListBehavior = do
   mainBox <- UI.div #. "tileTable" :: UI Element
   let childrenBehavior :: FRP.Behavior (UI [Element])
@@ -153,7 +148,6 @@ tileTable tileListBehavior = do
         newChildren <- newChildrenUI
         set children newChildren $ element mainBox
     )
-  -- mainBox <- sink children childrenBehavior $ element mainBox
   return mainBox
  where
   tileGrid :: [Game.Tile] -> UI [Element]
