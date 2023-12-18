@@ -8,10 +8,11 @@ module Interface.GUI (
 
 import Control.Monad
 import Data.Maybe qualified
-import Game (RummikubState)
 import Game qualified
 import Game.Core qualified as Game
 import Game.Set qualified as Set
+import Game.State (RummikubState)
+import Game.State qualified as Game
 import Game.TileCountArray qualified as TileCountArray
 import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
@@ -80,13 +81,13 @@ setup window = do
   tableCommandBar <-
     commandRow
       "Change table: "
-      Game.modifyTableMay
+      Game.modifyTable
       stateChangeHandler
 
   rackCommandBar <-
     commandRow
       "Change rack: "
-      Game.modifyRackMay
+      Game.modifyRack
       stateChangeHandler
   tableTileTableWrap <-
     UI.div
@@ -112,8 +113,8 @@ setup window = do
 -- | Configure a command row
 commandRow ::
   String ->
-  (Int -> Game.Tile -> Game.RummikubState -> Maybe Game.RummikubState) ->
-  FRP.Handler (Game.RummikubState -> Game.RummikubState) ->
+  (Int -> Game.Tile -> RummikubState -> Maybe RummikubState) ->
+  FRP.Handler (RummikubState -> RummikubState) ->
   UI Element
 commandRow prompt modifyFunction stateChangeHandler = do
   promptElement <- string prompt

@@ -3,12 +3,6 @@ Module : Game
 Description : Data and functions for describing and solving a Rummikub game.
 -}
 module Game (
-  RummikubState,
-  table,
-  rack,
-  initialRummikubState,
-  modifyTableMay,
-  modifyRackMay,
   solveRummikubState,
 ) where
 
@@ -38,12 +32,11 @@ import Game.Core (
  )
 import Game.Set (Set, allSets)
 import Game.Set qualified as Set
+import Game.State (RummikubState, rack, table)
 import Game.TileCountArray (
   TileCountArray,
-  addCount,
   tileCount,
  )
-import Game.TileCountArray qualified as TileCountArray
 import Relude hiding (Set)
 import Relude.Unsafe qualified as Unsafe
 
@@ -147,34 +140,6 @@ solveModel model = do
       ([], [])
       . Data.Map.filter (> 0)
   setIdxToSet = (Unsafe.!!) allSets
-
---- Game State
-data RummikubState = RummikubState
-  { table :: TileCountArray
-  , rack :: TileCountArray
-  }
-  deriving stock (Eq, Show)
-
-initialRummikubState :: RummikubState
-initialRummikubState =
-  RummikubState TileCountArray.empty TileCountArray.empty
-
-isRummikubStateConsistent :: RummikubState -> Bool
-isRummikubStateConsistent state = isJust $ TileCountArray.union state.table state.rack
-
-modifyTableMay :: Int -> Tile -> RummikubState -> Maybe RummikubState
-modifyTableMay count tile state = do
-  newTable <- addCount count tile state.table
-  let newState = RummikubState newTable state.rack
-  guard $ isRummikubStateConsistent newState
-  return newState
-
-modifyRackMay :: Int -> Tile -> RummikubState -> Maybe RummikubState
-modifyRackMay count tile state = do
-  newRack <- addCount count tile state.rack
-  let newState = RummikubState state.table newRack
-  guard $ isRummikubStateConsistent newState
-  return newState
 
 solveRummikubState :: RummikubState -> IO (Maybe ([Set], [Tile]))
 solveRummikubState state =

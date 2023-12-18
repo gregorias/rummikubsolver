@@ -4,6 +4,7 @@ import Test.Combinatorics qualified
 import Test.Game qualified
 import Test.Game.Core qualified
 import Test.Game.Set qualified
+import Test.Game.State qualified
 import Test.Hspec (hspec)
 import Test.Hspec.Contrib.HUnit (fromHUnitTest)
 import Test.Interface.TileChangeCommand qualified
@@ -15,4 +16,5 @@ main = hspec $ do
   Test.Combinatorics.tests
   Test.Game.Core.tests
   Test.Game.Set.tests
+  Test.Game.State.tests
   Test.Interface.TileChangeCommand.tests

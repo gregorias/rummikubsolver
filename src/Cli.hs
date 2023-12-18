@@ -2,7 +2,7 @@
 module Cli (main) where
 
 import Control.Applicative
-import Game (initialRummikubState)
+import Game.State (initialRummikubState)
 import Interface.Console (game)
 import Interface.GUI qualified as GUI
 import Options.Applicative (

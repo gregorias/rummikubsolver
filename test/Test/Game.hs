@@ -8,6 +8,7 @@ import Control.Monad
 import Data.Maybe
 import Game qualified
 import Game.Core qualified as Game
+import Game.State qualified as Game
 import Relude
 import Test.HUnit qualified as HU
 
@@ -15,31 +16,9 @@ tests :: HU.Test
 tests =
   HU.TestList
     [ HU.TestLabel
-        "shouldReturnNothingOnInvalidMoves0"
-        shouldReturnNothingOnInvalidMoves0
-    , HU.TestLabel
-        "shouldReturnNothingOnInvalidMoves1"
-        shouldReturnNothingOnInvalidMoves1
-    , HU.TestLabel
         "shouldSolveTheRummikubCompletely"
         shouldSolveTheRummikubCompletely
     ]
-
-shouldReturnNothingOnInvalidMoves0 :: HU.Test
-shouldReturnNothingOnInvalidMoves0 =
-  Nothing
-    HU.~=? Game.modifyTableMay
-      3
-      (Game.ValueTile (1, Game.Red))
-      Game.initialRummikubState
-
-shouldReturnNothingOnInvalidMoves1 :: HU.Test
-shouldReturnNothingOnInvalidMoves1 =
-  Nothing
-    HU.~=? Game.modifyRackMay
-      3
-      (Game.ValueTile (1, Game.Red))
-      Game.initialRummikubState
 
 shouldSolveTheRummikubCompletely :: HU.Test
 shouldSolveTheRummikubCompletely = HU.TestCase $ do
@@ -64,6 +43,6 @@ shouldSolveTheRummikubCompletely = HU.TestCase $ do
       ++ map (\v -> Game.ValueTile (v, Game.Yellow)) [2, 5, 6, 8]
       ++ map (\v -> Game.ValueTile (v, Game.Black)) [2, 12]
   rummikubStateMay =
-    foldr ((<=<) . Game.modifyRackMay 1) Just tilesOnRack
-      <=< foldr ((<=<) . Game.modifyTableMay 1) Just tilesOnTable
+    foldr ((<=<) . Game.modifyRack 1) Just tilesOnRack
+      <=< foldr ((<=<) . Game.modifyTable 1) Just tilesOnTable
         $ Game.initialRummikubState

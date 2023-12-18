@@ -4,19 +4,21 @@ module Interface.Console (
 
 import Data.Array.IArray qualified as Array
 import Game (
-  RummikubState,
-  initialRummikubState,
-  modifyRackMay,
-  modifyTableMay,
-  rack,
   solveRummikubState,
-  table,
  )
 import Game.Core (
   Color (..),
   Tile (..),
  )
 import Game.Set qualified as Set
+import Game.State (
+  RummikubState,
+  initialRummikubState,
+  modifyRack,
+  modifyTable,
+  rack,
+  table,
+ )
 import Game.TileCountArray (TileCountArray)
 import Game.TileCountArray qualified as TileCountArray
 import Interface.TileChangeCommand (
@@ -39,8 +41,8 @@ commands = zipWith MenuCommand ['1' ..] actions'
  where
   actions :: [Game]
   actions =
-    [ modifyCommand modifyTableMay
-    , modifyCommand modifyRackMay
+    [ modifyCommand modifyTable
+    , modifyCommand modifyRack
     , solveCommand
     , showCommand
     , restartCommand
