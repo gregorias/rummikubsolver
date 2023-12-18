@@ -34,6 +34,7 @@ library
       Game
       Game.Core
       Game.Set
+      Game.TileCountArray
       Interface.Console
       Interface.GUI
       Interface.TileChangeCommand

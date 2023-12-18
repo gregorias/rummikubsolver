@@ -12,6 +12,7 @@ import Game (RummikubState)
 import Game qualified
 import Game.Core qualified as Game
 import Game.Set qualified as Set
+import Game.TileCountArray qualified as TileCountArray
 import Graphics.UI.Threepenny qualified as UI
 import Graphics.UI.Threepenny.Core
 import Interface.TileChangeCommand (
@@ -54,8 +55,8 @@ setup window = do
   (stateChangeEvent, stateChangeHandler) <- liftIO FRP.newEvent
   stateEvent <- FRP.accumE state stateChangeEvent
   stateBehavior <- FRP.stepper Game.initialRummikubState stateEvent
-  let tableBehavior = fmap (Game.tileArrayElems . Game.table) stateBehavior
-      rackBehavior = fmap (Game.tileArrayElems . Game.rack) stateBehavior
+  let tableBehavior = fmap (TileCountArray.toElemList . Game.table) stateBehavior
+      rackBehavior = fmap (TileCountArray.toElemList . Game.rack) stateBehavior
 
   (solutionEvent, solutionHandler) <- liftIO FRP.newEvent
   void

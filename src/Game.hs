@@ -3,12 +3,10 @@ Module : Game
 Description : Data and functions for describing and solving a Rummikub game.
 -}
 module Game (
-  TileArray,
   RummikubState,
   table,
   rack,
   initialRummikubState,
-  tileArrayElems,
   modifyTableMay,
   modifyRackMay,
   solveRummikubState,
@@ -40,10 +38,17 @@ import Game.Core (
  )
 import Game.Set (Set, allSets)
 import Game.Set qualified as Set
+import Game.TileCountArray (
+  TileCountArray,
+  addCount,
+  tileCount,
+  toRawArray,
+ )
+import Game.TileCountArray qualified as TileCountArray
 import Relude hiding (Set)
 import Relude.Unsafe qualified as Unsafe
 
-initSParameters :: (IArray a Int) => [Set] -> a (Int, Int) Int
+initSParameters :: [Set] -> UArray (Int, Int) Int
 initSParameters sets =
   accumArray (\count _ -> count + 1) 0 sArrayBounds assocList
  where
@@ -61,16 +66,16 @@ initSParameters sets =
 initModel ::
   (IArray a Int, MonadState (Data.LinearProgram.LP (Int, Int) Int) m) =>
   a (Int, Int) Int ->
-  a Int Int ->
-  a Int Int ->
+  TileCountArray ->
+  TileCountArray ->
   m ()
-initModel sArr tableArg rackArg = do
+initModel sArr table rack = do
   setDirection Max
   setObjective $ Relude.fromList $ map (curry (,1) 0) [0 .. tileSize]
   variableKinds setSize
   setVariableBounds setSize
-  rackVariableBounds rackArg
-  tileConstraints sArr tableArg
+  rackVariableBounds rack
+  tileConstraints sArr table
  where
   sBounds = bounds sArr
   tileSize = (snd . snd) sBounds
@@ -84,13 +89,11 @@ setVariableBounds setSize =
   mapM_ (\i -> varBds (1, i) 0 2) [0 .. setSize]
 
 rackVariableBounds ::
-  (MonadState (Data.LinearProgram.LP (Int, Int) Int) m, IArray a Int) =>
-  a Int Int ->
+  (MonadState (Data.LinearProgram.LP (Int, Int) Int) m) =>
+  TileCountArray ->
   m ()
 rackVariableBounds rackArg =
-  mapM_ (\i -> varLeq (0, i) (rackArg ! i)) [0 .. rackSize]
- where
-  rackSize = fromEnum (maxBound :: Tile)
+  mapM_ (\t -> varLeq (0, fromEnum t) (tileCount t rackArg)) [minBound .. maxBound]
 
 variableKinds ::
   (MonadState (Data.LinearProgram.LP (Int, Int) Int) m) =>
@@ -105,25 +108,25 @@ variableKinds setSize = do
 tileConstraints ::
   (IArray a Int, MonadState (Data.LinearProgram.LP (Int, Int) Int) m) =>
   a (Int, Int) Int ->
-  a Int Int ->
+  TileCountArray ->
   m ()
-tileConstraints sArr tableArg =
-  mapM_ createTileConstraint [0 .. 52]
+tileConstraints sArr table =
+  mapM_ createTileConstraint [minBound .. maxBound]
  where
   setSize = fst . snd . bounds $ sArr
-  createTileConstraint tileIndex =
+  createTileConstraint tile =
     equalTo
       (tileUsedInSetsCombination `union` tilesPlacedFromRack)
-      (tableArg ! tileIndex)
+      (tileCount tile table)
    where
     tileUsedInSetsCombination :: Map (Int, Int) Int
     tileUsedInSetsCombination =
       Relude.fromList
         $ map
-          (\setIndex -> ((1, setIndex), sArr ! (setIndex, tileIndex)))
+          (\setIndex -> ((1, setIndex), sArr ! (setIndex, fromEnum tile)))
           [0 .. setSize]
     tilesPlacedFromRack :: Map (Int, Int) Int
-    tilesPlacedFromRack = Relude.fromList [((0, tileIndex), -1)]
+    tilesPlacedFromRack = Relude.fromList [((0, fromEnum tile), -1)]
 
 solveModel ::
   (MonadIO m) =>
@@ -147,39 +150,18 @@ solveModel model = do
   setIdxToSet = (Unsafe.!!) allSets
 
 --- Game State
-type TileArray = UArray Int Int
-
 data RummikubState = RummikubState
-  { table :: TileArray
-  , rack :: TileArray
+  { table :: TileCountArray
+  , rack :: TileCountArray
   }
   deriving stock (Eq, Show)
 
 initialRummikubState :: RummikubState
 initialRummikubState =
-  RummikubState
-    (array arrayBounds $ map (,0) [0 .. (snd arrayBounds)])
-    (array arrayBounds $ map (,0) [0 .. (snd arrayBounds)])
- where
-  arrayBounds = (0, fromEnum (maxBound :: Tile))
+  RummikubState TileCountArray.empty TileCountArray.empty
 
-tileArrayElems :: TileArray -> [Tile]
-tileArrayElems tileArray =
-  concatMap (\(i, c) -> replicate c (toEnum i)) (assocs tileArray)
-
-modifyTileCount ::
-  Int ->
-  Tile ->
-  TileArray ->
-  TileArray
-modifyTileCount count tile tileArray =
-  accum
-    (+)
-    tileArray
-    [(fromEnum tile, count)]
-
-isTileArrayConsistent :: TileArray -> Bool
-isTileArrayConsistent = all ((&&) <$> (<= 2) <*> (>= 0)) . elems
+isTileArrayConsistent :: UArray Int Int -> Bool
+isTileArrayConsistent = all (<= 2) . elems
 
 isRummikubStateConsistent :: RummikubState -> Bool
 isRummikubStateConsistent state =
@@ -187,42 +169,26 @@ isRummikubStateConsistent state =
     && isTileArrayConsistent rackArray
     && isTileArrayConsistent combinedArrays
  where
-  tableArray = table state
-  rackArray = rack state
+  tableArray = toRawArray state.table
+  rackArray = toRawArray state.rack
   combinedArrays = accum (+) tableArray (assocs rackArray)
 
-modifyTableMay ::
-  Int ->
-  Tile ->
-  RummikubState ->
-  Maybe RummikubState
-modifyTableMay count tile state =
-  if isRummikubStateConsistent newState
-    then Just newState
-    else Nothing
- where
-  newState =
-    RummikubState
-      (modifyTileCount count tile $ table state)
-      (rack state)
+modifyTableMay :: Int -> Tile -> RummikubState -> Maybe RummikubState
+modifyTableMay count tile state = do
+  newTable <- addCount count tile state.table
+  let newState = RummikubState newTable state.rack
+  guard $ isRummikubStateConsistent newState
+  return newState
 
-modifyRackMay ::
-  Int ->
-  Tile ->
-  RummikubState ->
-  Maybe RummikubState
-modifyRackMay count tile state =
-  if isRummikubStateConsistent newState
-    then Just newState
-    else Nothing
- where
-  newState =
-    RummikubState
-      (table state)
-      (modifyTileCount count tile $ rack state)
+modifyRackMay :: Int -> Tile -> RummikubState -> Maybe RummikubState
+modifyRackMay count tile state = do
+  newRack <- addCount count tile state.rack
+  let newState = RummikubState state.table newRack
+  guard $ isRummikubStateConsistent newState
+  return newState
 
 solveRummikubState :: RummikubState -> IO (Maybe ([Set], [Tile]))
 solveRummikubState state =
   let sArr = initSParameters allSets
-      model = initModel sArr (table state) (rack state)
+      model = initModel sArr state.table state.rack
    in solveModel model

@@ -5,7 +5,6 @@ module Interface.Console (
 import Data.Array.IArray qualified as Array
 import Game (
   RummikubState,
-  TileArray,
   initialRummikubState,
   modifyRackMay,
   modifyTableMay,
@@ -18,6 +17,8 @@ import Game.Core (
   Tile (..),
  )
 import Game.Set qualified as Set
+import Game.TileCountArray (TileCountArray)
+import Game.TileCountArray qualified as TileCountArray
 import Interface.TileChangeCommand (
   TileChangeCommand (..),
   parseTileChangeCommands,
@@ -130,7 +131,7 @@ instance PrettyPrint Tile where
   prettyPrint Joker = "Joker"
   prettyPrint (ValueTile (i, c)) = show c ++ "[" ++ show (fromIntegral i) ++ "]"
 
-instance PrettyPrint TileArray where
+instance PrettyPrint TileCountArray where
   prettyPrint arr =
     "RED: "
       ++ tileListToString reds
@@ -151,6 +152,7 @@ instance PrettyPrint TileArray where
       filter ((> 0) . snd)
         . map (\(i, e) -> (toEnum i :: Tile, e))
         . Array.assocs
+        . TileCountArray.toRawArray
         $ arr
     matchColor :: Color -> Tile -> Bool
     matchColor _ Joker = False
