@@ -7,7 +7,6 @@ module Interface.GUI (
 ) where
 
 import Control.Monad
-import Data.Maybe qualified
 import Game qualified
 import Game.Core qualified as Game
 import Game.Set qualified as Set
@@ -52,12 +51,37 @@ setup window = do
 
   windowTitle <- UI.h1 # set text "Rummikub Solver"
 
-  let state = Game.initialRummikubState
-  (stateChangeEvent, stateChangeHandler) <- liftIO FRP.newEvent
-  stateEvent <- FRP.accumE state stateChangeEvent
+  ( userCommandEvent :: FRP.Event (RummikubState -> Either Text RummikubState)
+    , userCommandHandler
+    ) <-
+    liftIO FRP.newEvent
+  tableCommandBar <- commandRow "Change table: " Game.modifyTable userCommandHandler
+  rackCommandBar <- commandRow "Change rack: " Game.modifyRack userCommandHandler
+
+  -- A state change event. We take in commands and ignore errors.
+  let (stateChangeEvent :: FRP.Event (RummikubState -> RummikubState)) =
+        userCommandEvent <&> (\command state -> command state & fromRight state)
+
+  -- The authoritative game state.
+  stateEvent <- FRP.accumE Game.initialRummikubState stateChangeEvent
   stateBehavior <- FRP.stepper Game.initialRummikubState stateEvent
   let tableBehavior = fmap (TileCountArray.toElemList . Game.table) stateBehavior
       rackBehavior = fmap (TileCountArray.toElemList . Game.rack) stateBehavior
+
+  tableTileTable <- tileTable tableBehavior
+  void $ element tableTileTable # set UI.id_ "tableGrid"
+
+  rackTileTable <- tileTable rackBehavior
+  void $ element rackTileTable # set UI.id_ "rackGrid"
+
+  tableTileTableWrap <-
+    UI.div
+      #. "tileTableWrap"
+      #+ [element tableTileTable, element tableCommandBar]
+  rackTileTableWrap <-
+    UI.div
+      #. "tileTableWrap"
+      #+ [element rackTileTable, element rackCommandBar]
 
   (solutionEvent, solutionHandler) <- liftIO FRP.newEvent
   void
@@ -72,24 +96,6 @@ setup window = do
   let solutionSetsBehavior = fmap fst solutionBehavior
       solutionTilesBehavior = fmap snd solutionBehavior
 
-  tableTileTable <- tileTable tableBehavior
-  void $ element tableTileTable # set UI.id_ "tableGrid"
-
-  rackTileTable <- tileTable rackBehavior
-  void $ element rackTileTable # set UI.id_ "rackGrid"
-
-  tableCommandBar <- commandRow "Change table: " Game.modifyTable stateChangeHandler
-  rackCommandBar <- commandRow "Change rack: " Game.modifyRack stateChangeHandler
-
-  tableTileTableWrap <-
-    UI.div
-      #. "tileTableWrap"
-      #+ [element tableTileTable, element tableCommandBar]
-  rackTileTableWrap <-
-    UI.div
-      #. "tileTableWrap"
-      #+ [element rackTileTable, element rackCommandBar]
-
   setsBox <- setsDiv (Set.toTiles <<$>> solutionSetsBehavior)
   placedTilesBox <- placedTilesDiv solutionTilesBehavior
 
@@ -102,13 +108,16 @@ setup window = do
        , element placedTilesBox
        ]
 
--- | Configure a command row
+-- | Create a row with a prompt to modify the state.
 commandRow ::
   String ->
   (Int -> Game.Tile -> RummikubState -> Maybe RummikubState) ->
-  FRP.Handler (RummikubState -> RummikubState) ->
+  -- | A handler to act on command events.
+  --
+  -- The commanded state change can fail with a message.
+  FRP.Handler (RummikubState -> Either Text RummikubState) ->
   UI Element
-commandRow prompt modifyFunction stateChangeHandler = do
+commandRow prompt modifyFunction commandHandler = do
   promptElement <- string prompt
   inputBox <- UI.input
   button <-
@@ -118,19 +127,15 @@ commandRow prompt modifyFunction stateChangeHandler = do
       UI Element
 
   on UI.click button
-    $ \_ ->
-      let modifyMaybeSafe :: (s -> Maybe s) -> s -> s
-          modifyMaybeSafe modifyFun state =
-            Data.Maybe.fromMaybe state $ modifyFun state
-       in do
-            inputString <- inputBox # get value :: UI String
-            let (tileChangeCommands :: [TileChangeCommand]) =
-                  fromMaybe [] $ parseTileChangeCommands (fromString inputString)
-                (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
-                  Add tile -> modifyFunction 1 tile
-                  Remove tile -> modifyFunction (-1) tile
-                modifyFunctionSafe = modifyMaybeSafe (\state -> foldl' (>>=) (Just state) changes)
-            liftIO $ stateChangeHandler modifyFunctionSafe
+    $ \_ -> do
+      inputString <- inputBox # get value :: UI String
+      let (tileChangeCommands :: [TileChangeCommand]) =
+            fromMaybe [] $ parseTileChangeCommands (fromString inputString)
+          (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
+            Add tile -> modifyFunction 1 tile
+            Remove tile -> modifyFunction (-1) tile
+          fun state = foldl' (>>=) (Just state) changes
+      liftIO $ commandHandler (maybe (Left "Invalid state transition") Right . fun)
   UI.div #+ [element promptElement, element inputBox, element button]
 
 -- | Returns the tile table element.
