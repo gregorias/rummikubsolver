@@ -1,0 +1,15 @@
+# An image that builds and installs rummikubsolver.
+FROM lts-linux-amd64
+ARG CORES=12
+
+RUN apt-get install -y zip
+COPY . /root/rummikubsolver
+WORKDIR /root/rummikubsolver
+RUN stack --system-ghc build -j$CORES
+RUN stack --system-ghc install -j$CORES
+
+RUN mkdir release-linux-amd64
+RUN cp -r resources release-linux-amd64/
+RUN cp /root/.local/bin/rummikubsolver release-linux-amd64/
+WORKDIR /root/rummikubsolver/release-linux-amd64
+RUN zip -r release-linux-amd64.zip resources rummikubsolver

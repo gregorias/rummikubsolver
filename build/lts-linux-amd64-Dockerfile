@@ -1,0 +1,38 @@
+# A base Ubuntu image with GHC, Cabal, and Stack installed.
+FROM ubuntu:23.10
+ARG GHC=9.4.7
+ARG CABAL=3.6.2.0-p1
+ARG STACK=2.11.1
+ARG LTS=21.21
+ARG CORES=12
+
+WORKDIR /root
+RUN apt-get update
+RUN apt-get install -y build-essential curl libffi-dev libffi8ubuntu1 libgmp-dev libgmp10 libncurses-dev
+RUN \
+    curl https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup > /usr/bin/ghcup && \
+    chmod +x /usr/bin/ghcup
+
+RUN ghcup -v install ghc --isolate /usr/local --force $GHC
+RUN ghcup -v install stack --isolate /usr/local/bin --force $STACK
+RUN ghcup -v install cabal --isolate /usr/local/bin --force $CABAL
+
+RUN apt-get install -y zlib1g-dev libglpk-dev
+# Prebuild some common packages.
+RUN stack --system-ghc --resolver=lts-${LTS} build -j${CORES} \
+  aeson \
+  array \
+  attoparsec \
+  base-compat \
+  conduit \
+  hashable \
+  megaparsec \
+  optparse-applicative \
+  random \
+  relude \
+  regex-posix \
+  safe \
+  transformers \
+  vector \
+  websockets \
+  witherable

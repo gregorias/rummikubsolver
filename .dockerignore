@@ -1,0 +1,9 @@
+# Files that are irrelevant to the build process in Docker containers.
+build/
+README.md
+DEV.md
+
+.stack-work
+.git
+.dockerignore
+.DS_Store

@@ -16,9 +16,8 @@ achieve them.
 
 ### Download from GitHub releases
 
-You can check [the releases
-tab](https://github.com/gregorias/rummikubsolver/releases) if there's already a
-binary built for your platform.
+Check [the releases tab](https://github.com/gregorias/rummikubsolver/releases)
+if there's already a package built for your platform.
 
 ### Building from Source
 

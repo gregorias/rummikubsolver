@@ -2,6 +2,7 @@
 module Cli (main) where
 
 import Control.Applicative
+import Data.Version (showVersion)
 import Game.State (initialRummikubState)
 import Interface.Console (game)
 import Interface.GUI qualified as GUI
@@ -18,10 +19,12 @@ import Options.Applicative (
   metavar,
   option,
   progDesc,
+  simpleVersioner,
   subparser,
   value,
  )
 import Options.Applicative qualified
+import Paths_rummikubsolver (version)
 import Relude
 
 data Config
@@ -70,7 +73,7 @@ cliInfo =
 
 main :: IO ()
 main = do
-  config <- execParser (info (helper <*> cliP) cliInfo)
+  config <- execParser (info (cliP <**> helper <**> simpleVersioner (showVersion version)) cliInfo)
   case config of
     Cli -> evalStateT game initialRummikubState
     Gui (ConfigGui{cgPort = port, cgCss = css}) ->
