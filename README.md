@@ -14,18 +14,25 @@ achieve them.
 
 ## Installation
 
-### Download from GitHub releases
-
-Check [the releases tab](https://github.com/gregorias/rummikubsolver/releases)
-if there's already a package built for your platform.
-
-### Building from Source
+### Prerequisites
 
 Rummikub Solver requires [GLPK](https://www.gnu.org/software/glpk/). Here are
 package pointers to some selected platforms:
 
 - On Ubuntu, with [libglpk-dev](https://packages.ubuntu.com/lunar/libglpk-dev).
+- On Arch Linux, with [glpk](https://archlinux.org/packages/extra/x86_64/glpk/).
 - On MacOS, with [Homebrew GLPK](https://formulae.brew.sh/formula/glpk).
+
+### Download/Build
+
+You can try fetching a built package or building a package yourself.
+
+#### Download from GitHub releases
+
+Check [the releases tab](https://github.com/gregorias/rummikubsolver/releases)
+if there's already a package built for your platform.
+
+#### Building from Source
 
 Use Stack to build & install the package:
 
