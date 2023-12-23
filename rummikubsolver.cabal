@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           rummikubsolver
-version:        0.1.0.0
+version:        1.0.0.0
 synopsis:       An interactive solver for Rummikub with a web interface.
 description:    Please see the README on GitHub at <https://github.com/gregorias/findata-transcoder#readme>
 category:       Game
