@@ -29,5 +29,15 @@ To create a release, run the following steps:
     1. Build a release for linux/amd64 with `build/build-linux-amd64.sh`
     2. Create a GitHub release: `gh release create v$VERSION release/rummikubsolver-linux-amd64.zip`
 
+## ADRs
+
+### On convenient distribution
+
+I don't provide a convenient built distribution, because:
+
+- On Windows, I don't want to bother researching how to do this.
+- On Linux, the executable should be fine. Researching AppImage is probably not needed.
+- On macOS, I don't want to pay $99 to be able to sign the package.
+
 [Commitlint]: https://github.com/conventional-changelog/commitlint
 [Lefthook]: https://github.com/evilmartians/lefthook
