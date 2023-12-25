@@ -8,14 +8,18 @@ module Game.State (
   modifyRack,
 ) where
 
+import Data.Foldable (foldrM)
 import Game.Core (Tile)
 import Game.TileCountArray (TileCountArray, addCount)
 import Game.TileCountArray qualified as TileCountArray
 import Relude
+import Solver (solveTable)
 
 -- | The game state from a solver's perspective.
 --
--- Guarantees that tile counts are consistent with Rummikub's rules.
+-- Guarantees that:
+-- - Tile counts are consistent with Rummikub's rules.
+-- - The table always has only tiles present in sets.
 data RummikubState = RummikubState
   { table :: TileCountArray
   , rack :: TileCountArray
@@ -27,11 +31,15 @@ initialRummikubState =
   RummikubState TileCountArray.empty TileCountArray.empty
 
 isRummikubStateConsistent :: RummikubState -> Either Text ()
-isRummikubStateConsistent state = void $ TileCountArray.union state.table state.rack
+isRummikubStateConsistent state = do
+  void $ TileCountArray.union state.table state.rack
+  case solveTable state.table of
+    Nothing -> Left "the table is not solvable"
+    Just _ -> return ()
 
-modifyTable :: Int -> Tile -> RummikubState -> Either Text RummikubState
-modifyTable count tile state = do
-  newTable <- addCount count tile state.table
+modifyTable :: [(Int, Tile)] -> RummikubState -> Either Text RummikubState
+modifyTable changes state = do
+  newTable <- foldrM (uncurry addCount) state.table changes
   let newState = RummikubState newTable state.rack
   isRummikubStateConsistent newState
   return newState

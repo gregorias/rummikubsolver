@@ -2,7 +2,6 @@
 
 module Test.Game (
   huTests,
-  tests,
 ) where
 
 import Control.Monad
@@ -10,12 +9,9 @@ import Data.Maybe
 import Game qualified
 import Game.Core qualified as Game
 import Game.State qualified as Game
-import Game.TileCountArray qualified as Tca
 import Relude
 import Test.HUnit qualified as HU
-import Test.HUnit.Extra (assertJust, assertRightOrFailPrint)
-import Test.Hspec (SpecWith, describe, it)
-import Test.Hspec.Expectations.Pretty (shouldBe)
+import Test.HUnit.Extra (assertRightOrFailPrint)
 
 huTests :: HU.Test
 huTests =
@@ -48,27 +44,5 @@ shouldSolveTheRummikubCompletely = HU.TestCase $ do
       ++ map (\v -> Game.ValueTile (v, Game.Black)) [2, 12]
   rummikubStateMay =
     foldr ((<=<) . Game.modifyRack 1) Right tilesOnRack
-      <=< foldr ((<=<) . Game.modifyTable 1) Right tilesOnTable
+      <=< Game.modifyTable ((1,) <$> tilesOnTable)
         $ Game.initialRummikubState
-
-tests :: SpecWith ()
-tests = do
-  describe "Game" $ do
-    describe "solveTable" $ do
-      it "solves a table" $ do
-        let table =
-              Tca.empty
-                & Tca.addCountUnsafe 1 (Game.ValueTile (1, Game.Red))
-                & Tca.addCountUnsafe 1 (Game.ValueTile (2, Game.Red))
-                & Tca.addCountUnsafe 1 (Game.ValueTile (3, Game.Red))
-                & Tca.addCountUnsafe 1 (Game.ValueTile (4, Game.Red))
-        void $ assertJust $ Game.solveTable table
-
-      it "marks a table as invalid (not all tiles are in sets)" $ do
-        let table =
-              Tca.empty
-                & Tca.addCountUnsafe 1 (Game.ValueTile (1, Game.Red))
-                & Tca.addCountUnsafe 1 (Game.ValueTile (2, Game.Red))
-                & Tca.addCountUnsafe 1 (Game.ValueTile (3, Game.Red))
-                & Tca.addCountUnsafe 1 (Game.ValueTile (5, Game.Red))
-        Game.solveTable table `shouldBe` Nothing

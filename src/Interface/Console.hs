@@ -4,6 +4,7 @@ module Interface.Console (
 
 import Data.Array.IArray qualified as Array
 import Data.Either.Extra (eitherToMaybe)
+import Data.Foldable (foldrM)
 import Game (
   solveRummikubState,
  )
@@ -42,13 +43,15 @@ commands = zipWith MenuCommand ['1' ..] actions'
  where
   actions :: [Game]
   actions =
-    [ modifyCommand (\a b c -> eitherToMaybe $ modifyTable a b c)
-    , modifyCommand (\a b c -> eitherToMaybe $ modifyRack a b c)
+    [ modifyCommand (\cs -> eitherToMaybe . modifyTable cs)
+    , modifyCommand (\cs -> eitherToMaybe . modifyRackBatch cs)
     , solveCommand
     , showCommand
     , restartCommand
     ]
   actions' = (++ [return ()]) . map (>> game) $ actions
+  modifyRackBatch :: [(Int, Tile)] -> RummikubState -> Either Text RummikubState
+  modifyRackBatch changes state = foldrM (uncurry modifyRack) state changes
 
 putCommandPrompt :: IO ()
 putCommandPrompt = do
@@ -60,14 +63,14 @@ putCommandPrompt = do
   putStrLn "5. Restart."
   putStrLn "6. Quit."
 
-modifyCommand :: (Int -> Tile -> RummikubState -> Maybe RummikubState) -> Game
+modifyCommand :: ([(Int, Tile)] -> RummikubState -> Maybe RummikubState) -> Game
 modifyCommand modifyFunction = do
   tileChangeCommands <- liftIO readTiles
   currentState <- get
-  let (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
-        Add tiles -> modifyFunction 1 tiles
-        Remove tiles -> modifyFunction (-1) tiles
-  let newStateMay = foldl' (>>=) (Just currentState) changes
+  let (changes :: [(Int, Tile)]) = flip map tileChangeCommands $ \case
+        Add tile -> (1, tile)
+        Remove tile -> (-1, tile)
+  let newStateMay = modifyFunction changes currentState
   maybe
     (liftIO $ putStrLn "This modification would lead to invalid state.")
     put

@@ -39,6 +39,7 @@ library
       Interface.Console
       Interface.GUI
       Interface.TileChangeCommand
+      Solver
       Text.Megaparsec.Extra
   other-modules:
       Paths_rummikubsolver
@@ -121,6 +122,7 @@ test-suite test-rummikubsolver
       Test.Game.State
       Test.HUnit.Extra
       Test.Interface.TileChangeCommand
+      Test.Solver
       Paths_rummikubsolver
   hs-source-dirs:
       test

@@ -12,7 +12,7 @@ tests = do
   describe "Game.State" $ do
     describe "modifyTable" $ do
       it "prevents invalid state" $ do
-        void $ assertLeft $ Game.modifyTable 3 (Game.ValueTile (1, Game.Red)) initialRummikubState
+        void $ assertLeft $ Game.modifyTable [(3, Game.ValueTile (1, Game.Red))] initialRummikubState
     describe "modifyRack" $ do
       it "prevents invalid state" $ do
         void $ assertLeft $ Game.modifyRack 3 (Game.ValueTile (1, Game.Red)) initialRummikubState

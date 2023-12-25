@@ -8,7 +8,9 @@ module Interface.GUI (
 
 import Control.Monad
 import Data.Either.Extra (mapLeft)
+import Data.Foldable (foldrM)
 import Game qualified
+import Game.Core (Tile)
 import Game.Core qualified as Game
 import Game.Set qualified as Set
 import Game.State (RummikubState)
@@ -68,8 +70,11 @@ setup window = do
     , userCommandHandler
     ) <-
     liftIO FRP.newEvent
+  let modifyRackBatch :: [(Int, Tile)] -> RummikubState -> Either Text RummikubState
+      modifyRackBatch changes state = foldrM (uncurry Game.modifyRack) state changes
+
   tableCommandBar <- commandRow "Change table: " Game.modifyTable userCommandHandler
-  rackCommandBar <- commandRow "Change rack: " Game.modifyRack userCommandHandler
+  rackCommandBar <- commandRow "Change rack: " modifyRackBatch userCommandHandler
 
   -- A state change event. We take in commands and ignore errors.
   let (sessionStateChangeEvent :: FRP.Event (SessionState -> SessionState)) =
@@ -133,7 +138,7 @@ setup window = do
 -- | Creates a row with a prompt to modify the state.
 commandRow ::
   String ->
-  (Int -> Game.Tile -> RummikubState -> Either Text RummikubState) ->
+  ([(Int, Game.Tile)] -> RummikubState -> Either Text RummikubState) ->
   -- | A handler to act on command events.
   --
   -- The commanded state change can fail with a message.
@@ -160,11 +165,10 @@ commandRow prompt modifyFunction commandHandler = do
                   fail ""
               )
               return
-        let (changes :: [RummikubState -> Either Text RummikubState]) = flip map tileChangeCommands $ \case
-              Add tile -> modifyFunction 1 tile
-              Remove tile -> modifyFunction (-1) tile
-            fun state = foldl' (>>=) (Right state) changes
-        liftIO $ commandHandler (mapLeft ("Invalid state transition:\n" <>) . fun)
+        let (changes :: [(Int, Tile)]) = flip map tileChangeCommands $ \case
+              Add tile -> (1, tile)
+              Remove tile -> (-1, tile)
+        liftIO $ commandHandler (mapLeft ("Invalid state transition:\n" <>) . modifyFunction changes)
   UI.div #+ [element promptElement, element inputBox, element button]
 
 -- | Creates a box with an error message.
