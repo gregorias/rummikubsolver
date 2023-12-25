@@ -202,13 +202,7 @@ tileTable tileListBehavior = do
   return mainBox
  where
   tileGrid :: [Game.Tile] -> UI [Element]
-  tileGrid tiles = do
-    tableGrid <- grid . map (map tile) $ groupList 13 tiles :: UI Element
-    return [tableGrid]
-
-groupList :: Int -> [Game.Tile] -> [[Game.Tile]]
-groupList _ [] = []
-groupList size ss = take size ss : groupList size (drop size ss)
+  tileGrid = mapM tile
 
 tile :: Game.Tile -> UI Element
 tile tileArg =

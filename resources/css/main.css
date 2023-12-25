@@ -1,6 +1,7 @@
 body {
   margin: 0px auto;
-  width: 700px;
+  max-width: 44em;
+  padding: 1em;
 }
 
 h1 {
@@ -15,6 +16,9 @@ div.tileTableWrap {
 div.tileTable {
   min-height: 71px;
   margin: 1em 0px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 div#tableGrid {
