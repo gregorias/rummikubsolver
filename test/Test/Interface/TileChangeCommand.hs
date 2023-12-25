@@ -8,7 +8,9 @@ import Interface.TileChangeCommand (
  )
 import Relude
 import Test.HUnit.Extra (
+  assertLeft,
   assertRightOrFailPrint,
+  textShouldContain,
  )
 import Test.Hspec (SpecWith, describe, it)
 import Test.Hspec.Expectations.Pretty (shouldBe)
@@ -33,3 +35,7 @@ tests = do
             , Add Joker
             , Add $ ValueTile (4, Black)
             ]
+
+      it "doesn't parse garbage" $ do
+        errorMessage <- assertLeft $ parseTileChangeCommands "foobar"
+        errorMessage `textShouldContain` "expecting tile change commands"

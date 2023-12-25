@@ -31,8 +31,8 @@ parseTileChangeCommands :: Text -> Either Text [TileChangeCommand]
 parseTileChangeCommands = MP.parsePretty tileChangeCommandsP "command"
 
 tileChangeCommandsP :: Parser [TileChangeCommand]
-tileChangeCommandsP = MP.label "tile change commands" $ do
-  concat <$> sepBy tileChangeCommandP (MP.string ",")
+tileChangeCommandsP = MP.label "tile change commands (e.g. \"r13\")" $ do
+  concat <$> (sepBy tileChangeCommandP (MP.string ",") <* MP.eof)
 
 tileChangeCommandP :: Parser [TileChangeCommand]
 tileChangeCommandP = MP.label "tile change command" $ do
