@@ -26,8 +26,10 @@ To create a release, run the following steps:
 
 1. Create a new tagged commit with `dev/bin/release-new-version`.
 2. Build a GitHub release:
-    1. Build a release for linux/amd64 with `build/build-linux-amd64.sh`
-    2. Create a GitHub release: `gh release create v$VERSION release/rummikubsolver-linux-amd64.zip`
+    1. Build a release for linux/amd64 with `build/build-linux-amd64.sh`.
+    2. Build a release for Windows/amd64 with `build/build-win.sh`.
+    3. Create a GitHub release:
+       `gh release create v$VERSION release/rummikubsolver-linux-amd64.zip release/rummikubsolver-win64.zip`.
 
 ## ADRs
 

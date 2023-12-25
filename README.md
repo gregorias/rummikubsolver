@@ -14,37 +14,39 @@ achieve them.
 
 ## Installation
 
-This section explains how you can install this application.
+This section explains how you can install this application. You have two options:
 
-### Prerequisites
+- Fetch a prebuilt package.
+- Build from source.
 
-Rummikub Solver requires [GLPK](https://www.gnu.org/software/glpk/) for
-compilation and execution. Here are package pointers to some selected
-platforms:
+### Prebuilt Package
+
+For Linux & Windows, you may fetch a compiled package from
+[the releases tab](https://github.com/gregorias/rummikubsolver/releases).
+
+For Linux, you will additionally need to install GLPK (see the "GLPK" section
+below) to execute the included binary. Windows comes with the necessary DLLs
+bundled in the zip archive.
+
+### Building from source
+
+#### GLPK
+
+Rummikub Solver requires
+[GLPK](https://www.gnu.org/software/glpk/) for compilation and execution. Here
+are package pointers to some selected platforms:
 
 | OS | Package |
 | -- | ------- |
 | Ubuntu | [libglpk-dev](https://packages.ubuntu.com/lunar/libglpk-dev) |
 | Arch Linux | [glpk](https://archlinux.org/packages/extra/x86_64/glpk/) |
 | MacOS | [Homebrew GLPK](https://formulae.brew.sh/formula/glpk) |
+| Windows (Msys2) | [mingw-w64-x86_64-glpk](https://packages.msys2.org/package/mingw-w64-x86_64-glpk) |
 
-### Download/Build
-
-You can try fetching a built package or building a package yourself.
-
-#### (Linux) Download from GitHub releases
-
-If you are on Linux, check
-[the releases tab](https://github.com/gregorias/rummikubsolver/releases) to
-fetch a package for your platform.
-
-#### Building from Source
-
-In case there's no working built package for you, you can build one from source.
+#### Build
 
 Firstly, install a Haskell toolchain.
-This can be easily done with
-[GHCup](https://www.haskell.org/ghcup/).
+This can be easily done with [GHCup](https://www.haskell.org/ghcup/).
 
 Secondly, use Stack to build & install the package with:
 
