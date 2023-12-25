@@ -12,8 +12,9 @@ module Game.Core (
   maxSingleTileCount,
 ) where
 
-import Closed (Closed, unsafeClosed)
+import Closed (Closed (getClosed), unsafeClosed)
 import Relude hiding (Set)
+import Prelude (show)
 
 -- | The color of a tile.
 data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Generic, Show)
@@ -35,7 +36,11 @@ allValues :: [Closed 1 13]
 allValues = [minBound .. maxBound]
 
 -- | A single tile in the game.
-data Tile = ValueTile (Value, Color) | Joker deriving stock (Eq, Generic, Show)
+data Tile = ValueTile (Value, Color) | Joker deriving stock (Eq, Generic)
+
+instance Show Tile where
+  show (ValueTile (v, c)) = "ValueTile (" <> Relude.show (getClosed v) <> ", " <> Relude.show c <> ")"
+  show Joker = "Joker"
 
 instance Hashable Tile
 

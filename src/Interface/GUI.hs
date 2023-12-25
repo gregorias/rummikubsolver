@@ -7,6 +7,7 @@ module Interface.GUI (
 ) where
 
 import Control.Monad
+import Data.Either.Extra (mapLeft)
 import Game qualified
 import Game.Core qualified as Game
 import Game.Set qualified as Set
@@ -132,7 +133,7 @@ setup window = do
 -- | Creates a row with a prompt to modify the state.
 commandRow ::
   String ->
-  (Int -> Game.Tile -> RummikubState -> Maybe RummikubState) ->
+  (Int -> Game.Tile -> RummikubState -> Either Text RummikubState) ->
   -- | A handler to act on command events.
   --
   -- The commanded state change can fail with a message.
@@ -159,11 +160,11 @@ commandRow prompt modifyFunction commandHandler = do
                   fail ""
               )
               return
-        let (changes :: [RummikubState -> Maybe RummikubState]) = flip map tileChangeCommands $ \case
+        let (changes :: [RummikubState -> Either Text RummikubState]) = flip map tileChangeCommands $ \case
               Add tile -> modifyFunction 1 tile
               Remove tile -> modifyFunction (-1) tile
-            fun state = foldl' (>>=) (Just state) changes
-        liftIO $ commandHandler (maybe (Left "Invalid state transition") Right . fun)
+            fun state = foldl' (>>=) (Right state) changes
+        liftIO $ commandHandler (mapLeft ("Invalid state transition:\n" <>) . fun)
   UI.div #+ [element promptElement, element inputBox, element button]
 
 -- | Creates a box with an error message.

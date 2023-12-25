@@ -26,19 +26,19 @@ initialRummikubState :: RummikubState
 initialRummikubState =
   RummikubState TileCountArray.empty TileCountArray.empty
 
-isRummikubStateConsistent :: RummikubState -> Bool
-isRummikubStateConsistent state = isJust $ TileCountArray.union state.table state.rack
+isRummikubStateConsistent :: RummikubState -> Either Text ()
+isRummikubStateConsistent state = void $ TileCountArray.union state.table state.rack
 
-modifyTable :: Int -> Tile -> RummikubState -> Maybe RummikubState
+modifyTable :: Int -> Tile -> RummikubState -> Either Text RummikubState
 modifyTable count tile state = do
   newTable <- addCount count tile state.table
   let newState = RummikubState newTable state.rack
-  guard $ isRummikubStateConsistent newState
+  isRummikubStateConsistent newState
   return newState
 
-modifyRack :: Int -> Tile -> RummikubState -> Maybe RummikubState
+modifyRack :: Int -> Tile -> RummikubState -> Either Text RummikubState
 modifyRack count tile state = do
   newRack <- addCount count tile state.rack
   let newState = RummikubState state.table newRack
-  guard $ isRummikubStateConsistent newState
+  isRummikubStateConsistent newState
   return newState

@@ -3,6 +3,7 @@ module Interface.Console (
 ) where
 
 import Data.Array.IArray qualified as Array
+import Data.Either.Extra (eitherToMaybe)
 import Game (
   solveRummikubState,
  )
@@ -41,8 +42,8 @@ commands = zipWith MenuCommand ['1' ..] actions'
  where
   actions :: [Game]
   actions =
-    [ modifyCommand modifyTable
-    , modifyCommand modifyRack
+    [ modifyCommand (\a b c -> eitherToMaybe $ modifyTable a b c)
+    , modifyCommand (\a b c -> eitherToMaybe $ modifyRack a b c)
     , solveCommand
     , showCommand
     , restartCommand

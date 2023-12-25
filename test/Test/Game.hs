@@ -11,6 +11,7 @@ import Game.Core qualified as Game
 import Game.State qualified as Game
 import Relude
 import Test.HUnit qualified as HU
+import Test.HUnit.Extra (assertRightOrFailPrint)
 
 tests :: HU.Test
 tests =
@@ -22,8 +23,7 @@ tests =
 
 shouldSolveTheRummikubCompletely :: HU.Test
 shouldSolveTheRummikubCompletely = HU.TestCase $ do
-  HU.assertBool "" $ isJust rummikubStateMay
-  let Just rummikubState = rummikubStateMay
+  rummikubState <- assertRightOrFailPrint rummikubStateMay
   solutionMaybe <- Game.solveRummikubState rummikubState
   HU.assertBool "" $ isJust solutionMaybe
   let Just (_, tiles) = solutionMaybe
@@ -43,6 +43,6 @@ shouldSolveTheRummikubCompletely = HU.TestCase $ do
       ++ map (\v -> Game.ValueTile (v, Game.Yellow)) [2, 5, 6, 8]
       ++ map (\v -> Game.ValueTile (v, Game.Black)) [2, 12]
   rummikubStateMay =
-    foldr ((<=<) . Game.modifyRack 1) Just tilesOnRack
-      <=< foldr ((<=<) . Game.modifyTable 1) Just tilesOnTable
+    foldr ((<=<) . Game.modifyRack 1) Right tilesOnRack
+      <=< foldr ((<=<) . Game.modifyTable 1) Right tilesOnTable
         $ Game.initialRummikubState

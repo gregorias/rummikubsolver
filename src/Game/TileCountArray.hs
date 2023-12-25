@@ -8,7 +8,12 @@ module Game.TileCountArray (
   union,
 ) where
 
-import Data.Array.Base (accum, assocs, elems, listArray, (!))
+import Data.Array.Base (
+  accum,
+  assocs,
+  listArray,
+  (!),
+ )
 import Data.Array.Unboxed (UArray)
 import Game.Core (Tile)
 import Relude hiding (empty)
@@ -38,11 +43,12 @@ addCount ::
   Int ->
   Tile ->
   TileCountArray ->
-  Maybe TileCountArray
+  Either Text TileCountArray
 addCount count tile tca = do
   let newTca = addCountUnsafe count tile tca
   let newCount = tileCount tile newTca
-  guard $ newCount >= 0 && newCount <= 2
+  when (newCount < 0) $ Left ("tile count for " <> show tile <> " is negative")
+  when (newCount > 2) $ Left ("tile count for " <> show tile <> " is greater than 2")
   return newTca
 
 addCountUnsafe ::
@@ -52,8 +58,17 @@ addCountUnsafe ::
   TileCountArray
 addCountUnsafe count tile (TileCountArray a) = TileCountArray $ accum (+) a [(fromEnum tile, count)]
 
-union :: TileCountArray -> TileCountArray -> Maybe TileCountArray
+union :: TileCountArray -> TileCountArray -> Either Text TileCountArray
 union (TileCountArray a) (TileCountArray b) = do
   let resultUnsafe = TileCountArray $ accum (+) a (assocs b)
-  guard $ all (<= 2) (elems . toRawArray $ resultUnsafe)
+  let errors =
+        assocs (toRawArray resultUnsafe) <&> \(tIdx, count) -> do
+          when
+            (count > 2)
+            ( Left
+                $ "tile count for "
+                <> show (toEnum @Tile tIdx)
+                <> " is greater than 2"
+            )
+  sequence_ errors
   return resultUnsafe
