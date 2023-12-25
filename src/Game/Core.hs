@@ -17,7 +17,8 @@ import Relude hiding (Set)
 import Prelude (show)
 
 -- | The color of a tile.
-data Color = Red | Blue | Yellow | Black deriving stock (Bounded, Enum, Eq, Generic, Show)
+data Color = Red | Blue | Yellow | Black
+  deriving stock (Bounded, Enum, Eq, Generic, Ord, Show)
 
 allColors :: [Color]
 allColors = enumFrom $ toEnum 0
@@ -36,7 +37,8 @@ allValues :: [Closed 1 13]
 allValues = [minBound .. maxBound]
 
 -- | A single tile in the game.
-data Tile = ValueTile (Value, Color) | Joker deriving stock (Eq, Generic)
+data Tile = ValueTile (Value, Color) | Joker
+  deriving stock (Eq, Generic, Ord)
 
 instance Show Tile where
   show (ValueTile (v, c)) = "ValueTile (" <> Relude.show (getClosed v) <> ", " <> Relude.show c <> ")"

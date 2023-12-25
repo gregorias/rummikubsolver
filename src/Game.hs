@@ -3,6 +3,7 @@ Module : Game
 Description : Data and functions for solving a Rummikub game.
 -}
 module Game (
+  solveTable,
   solveRummikubState,
 ) where
 
@@ -37,8 +38,10 @@ import Game.TileCountArray (
   TileCountArray,
   tileCount,
  )
+import Game.TileCountArray qualified as Tca
 import Relude hiding (Set)
 import Relude.Unsafe qualified as Unsafe
+import System.IO.Unsafe (unsafePerformIO)
 
 initSParameters :: [Set] -> UArray (Int, Int) Int
 initSParameters sets =
@@ -140,6 +143,20 @@ solveModel model = do
       ([], [])
       . Data.Map.filter (> 0)
   setIdxToSet = (Unsafe.!!) allSets
+
+-- | Solves a table.
+--
+-- If the table is not solvable, returns Nothing.
+solveTable ::
+  -- | Tiles on a table.
+  TileCountArray ->
+  Maybe [Set]
+solveTable table = do
+  let sArr = initSParameters allSets
+  let model = initModel sArr Tca.empty table
+  (sets, tilesToPlace) <- unsafePerformIO $ solveModel model
+  guard $ sort tilesToPlace == sort (Tca.toElemList table)
+  return sets
 
 solveRummikubState :: RummikubState -> IO (Maybe ([Set], [Tile]))
 solveRummikubState state =

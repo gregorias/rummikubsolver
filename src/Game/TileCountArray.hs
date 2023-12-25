@@ -5,6 +5,7 @@ module Game.TileCountArray (
   toElemList,
   tileCount,
   addCount,
+  addCountUnsafe,
   union,
 ) where
 

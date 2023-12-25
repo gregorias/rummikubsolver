@@ -11,9 +11,10 @@ import Test.Interface.TileChangeCommand qualified
 
 main :: IO ()
 main = hspec $ do
-  fromHUnitTest Test.Game.tests
+  fromHUnitTest Test.Game.huTests
   Test.Closed.Extra.tests
   Test.Combinatorics.tests
+  Test.Game.tests
   Test.Game.Core.tests
   Test.Game.Set.tests
   Test.Game.State.tests
