@@ -1,6 +1,6 @@
 {-
 Module : Game
-Description : Data and functions for describing and solving a Rummikub game.
+Description : Data and functions for solving a Rummikub game.
 -}
 module Game (
   solveRummikubState,
